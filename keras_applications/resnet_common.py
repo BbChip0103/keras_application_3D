@@ -31,6 +31,7 @@ import numpy as np
 from . import get_submodules_from_kwargs
 from .imagenet_utils import _obtain_input_shape
 
+from DepthwiseConv3D import DepthwiseConv3D
 
 backend = None
 layers = None
@@ -227,7 +228,7 @@ def block3(x, filters, kernel_size=3, stride=1, groups=32,
 
     c = filters // groups
     x = layers.ZeroPadding3D(padding=1, name=name + '_2_pad')(x)
-    x = layers.DepthwiseConv3D(kernel_size, strides=stride, depth_multiplier=c,
+    x = DepthwiseConv3D(kernel_size, strides=stride, depth_multiplier=c,
                                use_bias=False, name=name + '_2_conv')(x)
     kernel = np.zeros((1, 1, filters * c, filters), dtype=np.float32)
     for i in range(filters):
