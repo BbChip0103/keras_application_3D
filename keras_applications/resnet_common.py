@@ -31,7 +31,7 @@ import numpy as np
 from . import get_submodules_from_kwargs
 from .imagenet_utils import _obtain_input_shape
 
-from DepthwiseConv3D import DepthwiseConv3D
+from .DepthwiseConv3D import DepthwiseConv3D
 
 backend = None
 layers = None
@@ -194,7 +194,7 @@ def stack2(x, filters, blocks, stride1=2, name=None):
     return x
 
 
-def block3(x, filters, kernel_size=3, stride=1, groups=32,
+def block3(x, filters, kernel_size=3, stride=1, group_base_channel=64, groups=32,
            conv_shortcut=True, name=None):
     """A residual block.
 
@@ -214,7 +214,7 @@ def block3(x, filters, kernel_size=3, stride=1, groups=32,
     bn_axis = -1 if backend.image_data_format() == 'channels_last' else 1
 
     if conv_shortcut is True:
-        shortcut = layers.Conv3D((64 // groups) * filters, 1, strides=stride,
+        shortcut = layers.Conv3D((group_base_channel // groups) * filters, 1, strides=stride,
                                  use_bias=False, name=name + '_0_conv')(x)
         # shortcut = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5,
         #                                      name=name + '_0_bn')(shortcut)
@@ -243,7 +243,7 @@ def block3(x, filters, kernel_size=3, stride=1, groups=32,
     #                               name=name + '_2_bn')(x)
     x = layers.Activation('relu', name=name + '_2_relu')(x)
 
-    x = layers.Conv3D((64 // groups) * filters, 1,
+    x = layers.Conv3D((group_base_channel // groups) * filters, 1,
                       use_bias=False, name=name + '_3_conv')(x)
     # x = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5,
     #                               name=name + '_3_bn')(x)
@@ -253,7 +253,7 @@ def block3(x, filters, kernel_size=3, stride=1, groups=32,
     return x
 
 
-def stack3(x, filters, blocks, stride1=2, groups=32, name=None):
+def stack3(x, filters, blocks, stride1=2, group_base_channel=64, groups=32, name=None):
     """A set of stacked residual blocks.
 
     # Arguments
@@ -267,10 +267,11 @@ def stack3(x, filters, blocks, stride1=2, groups=32, name=None):
     # Returns
         Output tensor for the stacked blocks.
     """
-    x = block3(x, filters, stride=stride1, groups=groups, name=name + '_block1')
+    x = block3(x, filters, stride=stride1, groups=groups, 
+                group_base_channel=group_base_channel, name=name + '_block1')
     for i in range(2, blocks + 1):
-        x = block3(x, filters, groups=groups, conv_shortcut=False,
-                   name=name + '_block' + str(i))
+        x = block3(x, filters, group_base_channel=group_base_channel, groups=groups, 
+                    conv_shortcut=False, name=name + '_block' + str(i))
     return x
 
 
@@ -602,14 +603,18 @@ def ResNext3D(include_top=True,
              classes=1000,
              base_channel=4,
              num_of_block=[3,4,6,3],
+             group_base_channel=4,
+             groups=2, 
              **kwargs):
     def stack_fn(x):
         depth_i = 0
-        x = stack3(x, base_channel*(2**(depth_i+1)), num_of_block[depth_i], stride1=1, 
+        x = stack3(x, base_channel*(2**(depth_i+1)), num_of_block[depth_i], 
+                    stride1=1, group_base_channel=group_base_channel, groups=groups, 
                     name='conv{}'.format(depth_i+2))
         for depth_i in range(1, len(num_of_block)):
             x = stack3(x, base_channel*(2**(depth_i+1)), num_of_block[depth_i], 
-                        name='conv{}'.format(depth_i+2))
+                    group_base_channel=group_base_channel, groups=groups, 
+                    name='conv{}'.format(depth_i+2))
         return x
     return ResNet(stack_fn, False, False, 'resnext_3D_{}'.format(base_channel),
                   include_top, weights,
