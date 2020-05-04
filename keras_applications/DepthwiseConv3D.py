@@ -12,10 +12,10 @@ from tensorflow.keras import initializers
 from tensorflow.keras import regularizers
 from tensorflow.keras import constraints
 from tensorflow.keras import layers
-from keras.utils import conv_utils
+import tensorflow.keras.utils as conv_utils
 from keras.legacy.interfaces import conv3d_args_preprocessor, generate_legacy_interface
 from tensorflow.keras.layers import Conv3D, InputSpec
-from keras.backend.tensorflow_backend import _preprocess_padding, _preprocess_conv3d_input
+from keras.backend.tensorflow_backend import _preprocess_conv3d_input
 
 import tensorflow as tf
 
@@ -124,7 +124,7 @@ class DepthwiseConv3D(Conv3D):
                  padding='valid',
                  depth_multiplier=1,
                  groups=None,
-                 data_format=None,
+                 data_format='channels_last',
                  activation=None,
                  use_bias=True,
                  depthwise_initializer='glorot_uniform',
@@ -156,9 +156,8 @@ class DepthwiseConv3D(Conv3D):
         self.depthwise_constraint = constraints.get(depthwise_constraint)
         self.bias_initializer = initializers.get(bias_initializer)
         self.dilation_rate = dilation_rate
-        self._padding = _preprocess_padding(self.padding)
+        self._padding = self.padding
         self._strides = (1,) + self.strides + (1,)
-        self._data_format = "NDHWC"
         self.input_dim = None
 
     def build(self, input_shape):
@@ -167,7 +166,7 @@ class DepthwiseConv3D(Conv3D):
                              'Received input shape:', str(input_shape))
         if self.data_format == 'channels_first':
             channel_axis = 1
-        else:
+        elif self.data_format == 'channels_last':
             channel_axis = -1
         if input_shape[channel_axis] is None:
             raise ValueError('The channel dimension of the inputs to '
@@ -212,26 +211,26 @@ class DepthwiseConv3D(Conv3D):
     def call(self, inputs, training=None):
         inputs = _preprocess_conv3d_input(inputs, self.data_format)
 
-        if self.data_format == 'channels_last':
-            dilation = (1,) + self.dilation_rate + (1,)
-        else:
-            dilation = self.dilation_rate + (1,) + (1,)
+        if self.data_format == 'channels_first':
+            dilation = tuple(list(self.dilation_rate) + [1,] + [1,])
+        elif self.data_format == 'channels_last':
+            dilation = tuple([1,] + list(self.dilation_rate) + [1,])
 
-        if self._data_format == 'NCDHW':
+        if self.data_format == 'channels_first':
             outputs = tf.concat(
                 [tf.nn.conv3d(inputs[0][:, i:i+self.input_dim//self.groups, :, :, :], self.depthwise_kernel[:, :, :, i:i+self.input_dim//self.groups, :],
                     strides=self._strides,
                     padding=self._padding,
                     dilations=dilation,
-                    data_format=self._data_format) for i in range(0, self.input_dim, self.input_dim//self.groups)], axis=1)
+                    data_format='NCDHW') for i in range(0, self.input_dim, self.input_dim//self.groups)], axis=1)
 
-        else:
+        elif self.data_format == 'channels_last':
             outputs = tf.concat(
                 [tf.nn.conv3d(inputs[0][:, :, :, :, i:i+self.input_dim//self.groups], self.depthwise_kernel[:, :, :, i:i+self.input_dim//self.groups, :],
                     strides=self._strides,
                     padding=self._padding,
                     dilations=dilation,
-                    data_format=self._data_format) for i in range(0, self.input_dim, self.input_dim//self.groups)], axis=-1)
+                    data_format='NDHWC') for i in range(0, self.input_dim, self.input_dim//self.groups)], axis=-1)
 
         if self.bias is not None:
             outputs = K.bias_add(
