@@ -60,7 +60,7 @@ from . import mobilenet_v2
 from . import mobilenet_v3
 from . import densenet
 from . import nasnet
-from . import resnet
-from . import resnet_v2
-from . import resnext
+#from . import resnet
+#from . import resnet_v2
+#from . import resnext
 from . import efficientnet

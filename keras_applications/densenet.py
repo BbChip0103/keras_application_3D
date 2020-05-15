@@ -307,7 +307,6 @@ def CustomDenseNet(blocks,
                     input_shape=None,
                     pooling=None,
                     classes=1000,
-                    first_num_of_conv=64,
                     growth_rate=32, 
                     **kwargs):
     """Instantiates the DenseNet architecture.
@@ -434,15 +433,13 @@ def CustomDenseNet3D(include_top=True,
                     input_shape=None,
                     pooling=None,
                     classes=1000,
-                    base_channel=4, 
+                    growth_rate=4, 
                     num_of_block=[6, 12, 24, 16],
-                    growth_rate=32, 
                     **kwargs):
     return CustomDenseNet(num_of_block,
                         include_top, weights,
                         input_tensor, input_shape,
                         pooling, classes,
-                        first_num_of_conv=base_channel,
                         growth_rate=growth_rate,
                         **kwargs)
 

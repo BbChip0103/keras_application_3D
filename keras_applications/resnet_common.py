@@ -584,11 +584,11 @@ def CustomResNet3D(include_top=True,
                     **kwargs):
     def stack_fn(x):
         depth_i = 0
-        x = stack1(x, base_channel*(2**(depth_i+1)), num_of_block[depth_i], stride1=1, 
-                    name='conv{}'.format(depth_i+2))
+        x = stack1(x, base_channel*(2**(depth_i)), num_of_block[depth_i], stride1=1, 
+                    name='conv{}'.format(depth_i+1))
         for depth_i in range(1, len(num_of_block)):
-            x = stack1(x, base_channel*(2**(depth_i+1)), num_of_block[depth_i], 
-                        name='conv{}'.format(depth_i+2))
+            x = stack1(x, base_channel*(2**(depth_i)), num_of_block[depth_i], 
+                        name='conv{}'.format(depth_i+1))
         return x
     return CustomResNetHead(stack_fn, False, True, 'resnet_3D_{}'.format(base_channel),
                             include_top, weights,
@@ -694,11 +694,11 @@ def CustomResNet3DV2(include_top=True,
                     **kwargs):
     def stack_fn(x):
         for depth_i in range(len(num_of_block)-1):
-            x = stack2(x, base_channel*(2**(depth_i+1)), num_of_block[depth_i], 
-                        name='conv{}'.format(depth_i+2))
+            x = stack2(x, base_channel*(2**(depth_i)), num_of_block[depth_i], 
+                        name='conv{}'.format(depth_i+1))
         depth_i = len(num_of_block)-1
-        x = stack2(x, base_channel*(2**(depth_i+1)), num_of_block[depth_i], stride1=1, 
-                    name='conv{}'.format(depth_i+2))
+        x = stack2(x, base_channel*(2**(depth_i)), num_of_block[depth_i], stride1=1, 
+                    name='conv{}'.format(depth_i+1))
         return x
     return CustomResNetHead(stack_fn, False, True, 'resnet_3D_V2_custom_{}'.format(base_channel),
                   include_top, weights,
