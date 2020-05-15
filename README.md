@@ -1,7 +1,7 @@
 # keras-applications-3D
 
 ### Hello, This repository provide blow things 
-* Convolution function for 3D (Please see keras_application_3D/custom_layers.py)
+* Convolution function for 3D (Please see keras_applications/custom_layers.py)
   * DepthwiseConv3D
   * SeparableConv3D
 * Major CNN architecture for 3D
