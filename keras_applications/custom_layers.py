@@ -189,7 +189,7 @@ class DepthwiseConv3D(Conv3D):
             constraint=self.depthwise_constraint)
 
         if self.use_bias:
-            self.bias = self.add_weight(shape=(self.input_dim * self.depth_multiplier,),
+            self.bias = self.add_weight(shape=self.input_dim * self.depth_multiplier,
                                         initializer=self.bias_initializer,
                                         name='bias',
                                         regularizer=self.bias_regularizer,
@@ -353,7 +353,7 @@ class SeparableConv3D(DepthwiseConv3D):
                  activity_regularizer=None,
                  depthwise_constraint=None,
                  bias_constraint=None,
-                 pointwise_initializer=None, 
+                 pointwise_initializer='glorot_uniform', 
                  pointwise_regularizer=None, 
                  pointwise_constraint=None, 
                  **kwargs):
@@ -364,9 +364,9 @@ class SeparableConv3D(DepthwiseConv3D):
             data_format=data_format,
             activation=None,
             use_bias=False,
-            bias_initializer=bias_initializer,
-            bias_regularizer=bias_regularizer,
-            bias_constraint=bias_constraint,
+            bias_initializer=None,
+            bias_regularizer=None,
+            bias_constraint=None,
             dilation_rate=dilation_rate,
             activity_regularizer=activity_regularizer,
             depth_multiplier=depth_multiplier,
@@ -377,12 +377,14 @@ class SeparableConv3D(DepthwiseConv3D):
             **kwargs)
         self.filters = filters
         self.activation = activation
-        self.use_bias = use_bias
-        self.pointwise_initializer = pointwise_initializer
-        self.pointwise_regularizer = pointwise_regularizer
-        self.pointwise_constraint = pointwise_constraint
+        self.pointwise_initializer = initializers.get(pointwise_initializer)
+        self.pointwise_regularizer = regularizers.get(pointwise_regularizer)
+        self.pointwise_constraint = constraints.get(pointwise_constraint)
+        self.use_pointwise_bias = use_bias
+        self.pointwise_bias_initializer = initializers.get(bias_initializer)
+        self.pointwise_bias_regularizer = regularizers.get(bias_regularizer)
+        self.pointwise_bias_constraint = constraints.get(bias_constraint)
 
-    ### TODO: To implement remained parts    
     def build(self, input_shape):
         if len(input_shape) < 5:
             raise ValueError('Inputs to `SeparableConv3D` should have rank 5. '
@@ -397,9 +399,9 @@ class SeparableConv3D(DepthwiseConv3D):
                              'should be defined. Found `None`.')
         self.input_dim = int(input_shape[channel_axis])
 
-        depthwise_kernel_shape = (1,
-                                  1,
-                                  1,
+        depthwise_kernel_shape = (self.kernel_size[0],
+                                  self.kernel_size[1],
+                                  self.kernel_size[2],
                                   1,
                                   self.input_dim * self.depth_multiplier)
 
@@ -410,9 +412,9 @@ class SeparableConv3D(DepthwiseConv3D):
             regularizer=self.depthwise_regularizer,
             constraint=self.depthwise_constraint)
 
-        pointwise_kernel_shape = (self.kernel_size[0],
-                                  self.kernel_size[1],
-                                  self.kernel_size[2],
+        pointwise_kernel_shape = (1,
+                                  1,
+                                  1,
                                   self.input_dim * self.depth_multiplier,
                                   self.filters)
 
@@ -423,14 +425,16 @@ class SeparableConv3D(DepthwiseConv3D):
             regularizer=self.pointwise_regularizer,
             constraint=self.pointwise_constraint)
 
-        if self.use_bias:
-            self.bias = self.add_weight(shape=(self.input_dim * self.depth_multiplier,),
-                                        initializer=self.bias_initializer,
+        self.bias = None
+        if self.use_pointwise_bias:
+            self.pointwise_bias = self.add_weight(
+                                        shape=self.filters,
+                                        initializer=self.pointwise_bias_initializer,
                                         name='bias',
-                                        regularizer=self.bias_regularizer,
-                                        constraint=self.bias_constraint)
+                                        regularizer=self.pointwise_bias_regularizer,
+                                        constraint=self.pointwise_bias_constraint)
         else:
-            self.bias = None
+            self.pointwise_bias = None
         
         # Set input spec.
         self.input_spec = InputSpec(ndim=5, axes={channel_axis: self.input_dim})
@@ -449,10 +453,10 @@ class SeparableConv3D(DepthwiseConv3D):
                                 padding= self._padding, dilations = dilation, 
                                 data_format=self._data_format)
 
-        if self.bias is not None:
+        if self.pointwise_bias is not None:
             outputs = K.bias_add(
                 outputs,
-                self.bias,
+                self.pointwise_bias,
                 data_format=self.data_format)
 
         if self.activation is not None:
