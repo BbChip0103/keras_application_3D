@@ -64,3 +64,6 @@ from . import nasnet
 #from . import resnet_v2
 #from . import resnext
 from . import efficientnet
+
+from . import custom_layers
+from . import _keras_legacy_interfaces

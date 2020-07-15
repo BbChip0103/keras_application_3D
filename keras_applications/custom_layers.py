@@ -13,9 +13,9 @@ from tensorflow.keras import regularizers
 from tensorflow.keras import constraints
 from tensorflow.keras import layers
 import tensorflow.keras.utils as conv_utils
-from keras.legacy.interfaces import conv3d_args_preprocessor, generate_legacy_interface
+from ._keras_legacy_interfaces import conv3d_args_preprocessor, generate_legacy_interface
 from tensorflow.keras.layers import Conv3D, InputSpec
-from keras.backend.tensorflow_backend import _preprocess_padding, _preprocess_conv3d_input
+from ._keras_backend_tensorflow_backend import _preprocess_padding, _preprocess_conv3d_input
 
 import tensorflow as tf
 

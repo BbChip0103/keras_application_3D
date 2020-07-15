@@ -142,7 +142,7 @@ def block(inputs, activation_fn=swish, drop_rate=0., name='',
     # Expansion phase
     filters = filters_in * expand_ratio
     if expand_ratio != 1:
-        x = layers.Conv2D(filters, 1,
+        x = layers.Conv3D(filters, 1,
                           padding='same',
                           use_bias=False,
                           kernel_initializer=CONV_KERNEL_INITIALIZER,
@@ -154,12 +154,12 @@ def block(inputs, activation_fn=swish, drop_rate=0., name='',
 
     # Depthwise Convolution
     if strides == 2:
-        x = layers.ZeroPadding2D(padding=correct_pad(backend, x, kernel_size),
+        x = layers.ZeroPadding3D(padding=correct_pad(backend, x, kernel_size),
                                  name=name + 'dwconv_pad')(x)
         conv_pad = 'valid'
     else:
         conv_pad = 'same'
-    x = layers.DepthwiseConv2D(kernel_size,
+    x = layers.DepthwiseConv3D(kernel_size,
                                strides=strides,
                                padding=conv_pad,
                                use_bias=False,
@@ -171,17 +171,17 @@ def block(inputs, activation_fn=swish, drop_rate=0., name='',
     # Squeeze and Excitation phase
     if 0 < se_ratio <= 1:
         filters_se = max(1, int(filters_in * se_ratio))
-        se = layers.GlobalAveragePooling2D(name=name + 'se_squeeze')(x)
+        se = layers.GlobalAveragePooling3D(name=name + 'se_squeeze')(x)
         if bn_axis == 1:
             se = layers.Reshape((filters, 1, 1), name=name + 'se_reshape')(se)
         else:
             se = layers.Reshape((1, 1, filters), name=name + 'se_reshape')(se)
-        se = layers.Conv2D(filters_se, 1,
+        se = layers.Conv3D(filters_se, 1,
                            padding='same',
                            activation=activation_fn,
                            kernel_initializer=CONV_KERNEL_INITIALIZER,
                            name=name + 'se_reduce')(se)
-        se = layers.Conv2D(filters, 1,
+        se = layers.Conv3D(filters, 1,
                            padding='same',
                            activation='sigmoid',
                            kernel_initializer=CONV_KERNEL_INITIALIZER,
@@ -196,7 +196,7 @@ def block(inputs, activation_fn=swish, drop_rate=0., name='',
         x = layers.multiply([x, se], name=name + 'se_excite')
 
     # Output phase
-    x = layers.Conv2D(filters_out, 1,
+    x = layers.Conv3D(filters_out, 1,
                       padding='same',
                       use_bias=False,
                       kernel_initializer=CONV_KERNEL_INITIALIZER,
@@ -323,9 +323,9 @@ def EfficientNet(width_coefficient,
 
     # Build stem
     x = img_input
-    x = layers.ZeroPadding2D(padding=correct_pad(backend, x, 3),
+    x = layers.ZeroPadding3D(padding=correct_pad(backend, x, 3),
                              name='stem_conv_pad')(x)
-    x = layers.Conv2D(round_filters(32), 3,
+    x = layers.Conv3D(round_filters(32), 3,
                       strides=2,
                       padding='valid',
                       use_bias=False,
@@ -356,7 +356,7 @@ def EfficientNet(width_coefficient,
             b += 1
 
     # Build top
-    x = layers.Conv2D(round_filters(1280), 1,
+    x = layers.Conv3D(round_filters(1280), 1,
                       padding='same',
                       use_bias=False,
                       kernel_initializer=CONV_KERNEL_INITIALIZER,
@@ -364,7 +364,7 @@ def EfficientNet(width_coefficient,
     x = layers.BatchNormalization(axis=bn_axis, name='top_bn')(x)
     x = layers.Activation(activation_fn, name='top_activation')(x)
     if include_top:
-        x = layers.GlobalAveragePooling2D(name='avg_pool')(x)
+        x = layers.GlobalAveragePooling3D(name='avg_pool')(x)
         if dropout_rate > 0:
             x = layers.Dropout(dropout_rate, name='top_dropout')(x)
         x = layers.Dense(classes,
@@ -373,9 +373,9 @@ def EfficientNet(width_coefficient,
                          name='probs')(x)
     else:
         if pooling == 'avg':
-            x = layers.GlobalAveragePooling2D(name='avg_pool')(x)
+            x = layers.GlobalAveragePooling3D(name='avg_pool')(x)
         elif pooling == 'max':
-            x = layers.GlobalMaxPooling2D(name='max_pool')(x)
+            x = layers.GlobalMaxPooling3D(name='max_pool')(x)
 
     # Ensure that the model takes into account
     # any potential predecessors of `input_tensor`.

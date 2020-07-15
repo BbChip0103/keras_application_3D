@@ -35,6 +35,7 @@ def Xception3D(include_top=True,
              pooling=None,
              base_channel=32,
              classes=1000,
+             use_batchnorm=True,
              **kwargs):
     """Instantiates the Xception architecture.
 
@@ -119,12 +120,14 @@ def Xception3D(include_top=True,
                       strides=2,
                       use_bias=False,
                       name='block1_conv1')(img_input)
-    x = layers.BatchNormalization(axis=channel_axis, name='block1_conv1_bn')(x)
+    if use_batchnorm: 
+        x = layers.BatchNormalization(axis=channel_axis, name='block1_conv1_bn')(x)
     x = layers.Activation('relu', name='block1_conv1_act')(x)
 
     depth_i *= 2
     x = layers.Conv3D(depth_i*base_channel, 3, use_bias=False, name='block1_conv2')(x)
-    x = layers.BatchNormalization(axis=channel_axis, name='block1_conv2_bn')(x)
+    if use_batchnorm: 
+        x = layers.BatchNormalization(axis=channel_axis, name='block1_conv2_bn')(x)
     x = layers.Activation('relu', name='block1_conv2_act')(x)
 
     depth_i *= 2
@@ -132,19 +135,22 @@ def Xception3D(include_top=True,
                              strides=2,
                              padding='same',
                              use_bias=False)(x)
-    residual = layers.BatchNormalization(axis=channel_axis)(residual)
+    if use_batchnorm: 
+        residual = layers.BatchNormalization(axis=channel_axis)(residual)
 
     x = SeparableConv3D(depth_i*base_channel, 3,
                                padding='same',
                                use_bias=False,
                                name='block2_sepconv1')(x)
-    x = layers.BatchNormalization(axis=channel_axis, name='block2_sepconv1_bn')(x)
+    if use_batchnorm: 
+        x = layers.BatchNormalization(axis=channel_axis, name='block2_sepconv1_bn')(x)
     x = layers.Activation('relu', name='block2_sepconv2_act')(x)
     x = SeparableConv3D(depth_i*base_channel, 3,
                                padding='same',
                                use_bias=False,
                                name='block2_sepconv2')(x)
-    x = layers.BatchNormalization(axis=channel_axis, name='block2_sepconv2_bn')(x)
+    if use_batchnorm: 
+        x = layers.BatchNormalization(axis=channel_axis, name='block2_sepconv2_bn')(x)
 
     x = layers.MaxPooling3D(3,
                             strides=2,
@@ -155,20 +161,23 @@ def Xception3D(include_top=True,
     depth_i *= 2
     residual = layers.Conv3D(depth_i*base_channel, 1, strides=2,
                              padding='same', use_bias=False)(x)
-    residual = layers.BatchNormalization(axis=channel_axis)(residual)
+    if use_batchnorm: 
+        residual = layers.BatchNormalization(axis=channel_axis)(residual)
 
     x = layers.Activation('relu', name='block3_sepconv1_act')(x)
     x = SeparableConv3D(depth_i*base_channel, 3,
                                padding='same',
                                use_bias=False,
                                name='block3_sepconv1')(x)
-    x = layers.BatchNormalization(axis=channel_axis, name='block3_sepconv1_bn')(x)
+    if use_batchnorm: 
+        x = layers.BatchNormalization(axis=channel_axis, name='block3_sepconv1_bn')(x)
     x = layers.Activation('relu', name='block3_sepconv2_act')(x)
     x = SeparableConv3D(depth_i*base_channel, 3,
                                padding='same',
                                use_bias=False,
                                name='block3_sepconv2')(x)
-    x = layers.BatchNormalization(axis=channel_axis, name='block3_sepconv2_bn')(x)
+    if use_batchnorm: 
+        x = layers.BatchNormalization(axis=channel_axis, name='block3_sepconv2_bn')(x)
 
     x = layers.MaxPooling3D(3, strides=2,
                             padding='same',
@@ -186,13 +195,15 @@ def Xception3D(include_top=True,
                                padding='same',
                                use_bias=False,
                                name='block4_sepconv1')(x)
-    x = layers.BatchNormalization(axis=channel_axis, name='block4_sepconv1_bn')(x)
+    if use_batchnorm: 
+        x = layers.BatchNormalization(axis=channel_axis, name='block4_sepconv1_bn')(x)
     x = layers.Activation('relu', name='block4_sepconv2_act')(x)
     x = SeparableConv3D(728, 3,
                                padding='same',
                                use_bias=False,
                                name='block4_sepconv2')(x)
-    x = layers.BatchNormalization(axis=channel_axis, name='block4_sepconv2_bn')(x)
+    if use_batchnorm: 
+        x = layers.BatchNormalization(axis=channel_axis, name='block4_sepconv2_bn')(x)
 
     x = layers.MaxPooling3D(3, strides=2,
                             padding='same',
@@ -208,41 +219,47 @@ def Xception3D(include_top=True,
                                    padding='same',
                                    use_bias=False,
                                    name=prefix + '_sepconv1')(x)
-        x = layers.BatchNormalization(axis=channel_axis,
+        if use_batchnorm: 
+            x = layers.BatchNormalization(axis=channel_axis,
                                       name=prefix + '_sepconv1_bn')(x)
         x = layers.Activation('relu', name=prefix + '_sepconv2_act')(x)
         x = SeparableConv3D(728, 3,
                                    padding='same',
                                    use_bias=False,
                                    name=prefix + '_sepconv2')(x)
-        x = layers.BatchNormalization(axis=channel_axis,
+        if use_batchnorm: 
+            x = layers.BatchNormalization(axis=channel_axis,
                                       name=prefix + '_sepconv2_bn')(x)
         x = layers.Activation('relu', name=prefix + '_sepconv3_act')(x)
         x = SeparableConv3D(728, 3,
                                    padding='same',
                                    use_bias=False,
                                    name=prefix + '_sepconv3')(x)
-        x = layers.BatchNormalization(axis=channel_axis,
+        if use_batchnorm: 
+            x = layers.BatchNormalization(axis=channel_axis,
                                       name=prefix + '_sepconv3_bn')(x)
 
         x = layers.add([x, residual])
 
     residual = layers.Conv3D(1024, 1, strides=2,
                              padding='same', use_bias=False)(x)
-    residual = layers.BatchNormalization(axis=channel_axis)(residual)
+    if use_batchnorm: 
+        residual = layers.BatchNormalization(axis=channel_axis)(residual)
 
     x = layers.Activation('relu', name='block13_sepconv1_act')(x)
     x = SeparableConv3D(728, 3,
                                padding='same',
                                use_bias=False,
                                name='block13_sepconv1')(x)
-    x = layers.BatchNormalization(axis=channel_axis, name='block13_sepconv1_bn')(x)
+    if use_batchnorm: 
+        x = layers.BatchNormalization(axis=channel_axis, name='block13_sepconv1_bn')(x)
     x = layers.Activation('relu', name='block13_sepconv2_act')(x)
     x = SeparableConv3D(1024, 3,
                                padding='same',
                                use_bias=False,
                                name='block13_sepconv2')(x)
-    x = layers.BatchNormalization(axis=channel_axis, name='block13_sepconv2_bn')(x)
+    if use_batchnorm: 
+        x = layers.BatchNormalization(axis=channel_axis, name='block13_sepconv2_bn')(x)
 
     x = layers.MaxPooling3D(3,
                             strides=2,
@@ -254,14 +271,16 @@ def Xception3D(include_top=True,
                                padding='same',
                                use_bias=False,
                                name='block14_sepconv1')(x)
-    x = layers.BatchNormalization(axis=channel_axis, name='block14_sepconv1_bn')(x)
+    if use_batchnorm: 
+        x = layers.BatchNormalization(axis=channel_axis, name='block14_sepconv1_bn')(x)
     x = layers.Activation('relu', name='block14_sepconv1_act')(x)
 
     x = SeparableConv3D(2048, 3,
                                padding='same',
                                use_bias=False,
                                name='block14_sepconv2')(x)
-    x = layers.BatchNormalization(axis=channel_axis, name='block14_sepconv2_bn')(x)
+    if use_batchnorm: 
+        x = layers.BatchNormalization(axis=channel_axis, name='block14_sepconv2_bn')(x)
     x = layers.Activation('relu', name='block14_sepconv2_act')(x)
 
     if include_top:
@@ -312,6 +331,7 @@ def CustomXception3D_1(include_top=True,
              pooling=None,
              base_channel=32,
              classes=1000,
+             use_batchnorm=True,
              **kwargs):
     """Instantiates the Xception architecture.
 
@@ -396,12 +416,14 @@ def CustomXception3D_1(include_top=True,
                       strides=2,
                       use_bias=False,
                       name='block1_conv1')(img_input)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block1_conv1_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block1_conv1_bn')(x)
     x = layers.Activation('relu', name='block1_conv1_act')(x)
 
     depth_i *= 2
     x = layers.Conv3D(depth_i*base_channel, 3, use_bias=False, name='block1_conv2')(x)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block1_conv2_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block1_conv2_bn')(x)
     x = layers.Activation('relu', name='block1_conv2_act')(x)
 
     depth_i *= 2
@@ -409,19 +431,22 @@ def CustomXception3D_1(include_top=True,
                              strides=2,
                              padding='same',
                              use_bias=False)(x)
-    # residual = layers.BatchNormalization(axis=channel_axis)(residual)
+    if use_batchnorm:
+        residual = layers.BatchNormalization(axis=channel_axis)(residual)
 
     x = SeparableConv3D(depth_i*base_channel, 3,
                                padding='same',
                                use_bias=False,
                                name='block2_sepconv1')(x)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block2_sepconv1_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block2_sepconv1_bn')(x)
     x = layers.Activation('relu', name='block2_sepconv2_act')(x)
     x = SeparableConv3D(depth_i*base_channel, 3,
                                padding='same',
                                use_bias=False,
                                name='block2_sepconv2')(x)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block2_sepconv2_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block2_sepconv2_bn')(x)
 
     x = layers.MaxPooling3D(3,
                             strides=2,
@@ -432,20 +457,23 @@ def CustomXception3D_1(include_top=True,
     depth_i *= 2
     residual = layers.Conv3D(depth_i*base_channel, 1, strides=2,
                              padding='same', use_bias=False)(x)
-    # residual = layers.BatchNormalization(axis=channel_axis)(residual)
+    if use_batchnorm:
+        residual = layers.BatchNormalization(axis=channel_axis)(residual)
 
     x = layers.Activation('relu', name='block3_sepconv1_act')(x)
     x = SeparableConv3D(depth_i*base_channel, 3,
                                padding='same',
                                use_bias=False,
                                name='block3_sepconv1')(x)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block3_sepconv1_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block3_sepconv1_bn')(x)
     x = layers.Activation('relu', name='block3_sepconv2_act')(x)
     x = SeparableConv3D(depth_i*base_channel, 3,
                                padding='same',
                                use_bias=False,
                                name='block3_sepconv2')(x)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block3_sepconv2_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block3_sepconv2_bn')(x)
 
     x = layers.MaxPooling3D(3, strides=2,
                             padding='same',
@@ -457,20 +485,23 @@ def CustomXception3D_1(include_top=True,
                              strides=2,
                              padding='same',
                              use_bias=False)(x)
-    # residual = layers.BatchNormalization(axis=channel_axis)(residual)
+    if use_batchnorm:
+        residual = layers.BatchNormalization(axis=channel_axis)(residual)
 
     x = layers.Activation('relu', name='block4_sepconv1_act')(x)
     x = SeparableConv3D(depth_i*base_channel*3//2, 3,
                                padding='same',
                                use_bias=False,
                                name='block4_sepconv1')(x)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block4_sepconv1_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block4_sepconv1_bn')(x)
     x = layers.Activation('relu', name='block4_sepconv2_act')(x)
     x = SeparableConv3D(depth_i*base_channel*3//2, 3,
                                padding='same',
                                use_bias=False,
                                name='block4_sepconv2')(x)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block4_sepconv2_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block4_sepconv2_bn')(x)
 
     x = layers.MaxPooling3D(3, strides=2,
                             padding='same',
@@ -486,42 +517,48 @@ def CustomXception3D_1(include_top=True,
                                    padding='same',
                                    use_bias=False,
                                    name=prefix + '_sepconv1')(x)
-        # x = layers.BatchNormalization(axis=channel_axis,
-        #                               name=prefix + '_sepconv1_bn')(x)
+        if use_batchnorm:
+            x = layers.BatchNormalization(axis=channel_axis,
+                                          name=prefix + '_sepconv1_bn')(x)
         x = layers.Activation('relu', name=prefix + '_sepconv2_act')(x)
         x = SeparableConv3D(depth_i*base_channel*3//2, 3,
                                    padding='same',
                                    use_bias=False,
                                    name=prefix + '_sepconv2')(x)
-        # x = layers.BatchNormalization(axis=channel_axis,
-        #                               name=prefix + '_sepconv2_bn')(x)
+        if use_batchnorm:
+            x = layers.BatchNormalization(axis=channel_axis,
+                                          name=prefix + '_sepconv2_bn')(x)
         x = layers.Activation('relu', name=prefix + '_sepconv3_act')(x)
         x = SeparableConv3D(depth_i*base_channel*3//2, 3,
                                    padding='same',
                                    use_bias=False,
                                    name=prefix + '_sepconv3')(x)
-        # x = layers.BatchNormalization(axis=channel_axis,
-        #                               name=prefix + '_sepconv3_bn')(x)
+        if use_batchnorm:
+            x = layers.BatchNormalization(axis=channel_axis,
+                                          name=prefix + '_sepconv3_bn')(x)
 
         x = layers.add([x, residual])
 
     depth_i *= 2
     residual = layers.Conv3D(depth_i*base_channel, 1, strides=2,
                              padding='same', use_bias=False)(x)
-    # residual = layers.BatchNormalization(axis=channel_axis)(residual)
+    if use_batchnorm:
+        residual = layers.BatchNormalization(axis=channel_axis)(residual)
 
     x = layers.Activation('relu', name='block13_sepconv1_act')(x)
     x = SeparableConv3D(depth_i*base_channel*3//4, 3,
                                padding='same',
                                use_bias=False,
                                name='block13_sepconv1')(x)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block13_sepconv1_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block13_sepconv1_bn')(x)
     x = layers.Activation('relu', name='block13_sepconv2_act')(x)
     x = SeparableConv3D(depth_i*base_channel, 3,
                                padding='same',
                                use_bias=False,
                                name='block13_sepconv2')(x)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block13_sepconv2_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block13_sepconv2_bn')(x)
 
     x = layers.MaxPooling3D(3,
                             strides=2,
@@ -534,14 +571,16 @@ def CustomXception3D_1(include_top=True,
                                padding='same',
                                use_bias=False,
                                name='block14_sepconv1')(x)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block14_sepconv1_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block14_sepconv1_bn')(x)
     x = layers.Activation('relu', name='block14_sepconv1_act')(x)
 
     x = SeparableConv3D(depth_i*base_channel, 3,
                                padding='same',
                                use_bias=False,
                                name='block14_sepconv2')(x)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block14_sepconv2_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block14_sepconv2_bn')(x)
     x = layers.Activation('relu', name='block14_sepconv2_act')(x)
 
     if include_top:
@@ -592,6 +631,7 @@ def CustomXception3D_2(include_top=True,
              pooling=None,
              base_channel=32,
              classes=1000,
+             use_batchnorm=True,
              **kwargs):
     """Instantiates the Xception architecture.
 
@@ -676,12 +716,14 @@ def CustomXception3D_2(include_top=True,
                       strides=2,
                       use_bias=False,
                       name='block1_conv1')(img_input)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block1_conv1_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block1_conv1_bn')(x)
     x = layers.Activation('relu', name='block1_conv1_act')(x)
 
     depth_i *= 2
     x = layers.Conv3D(depth_i*base_channel, 3, use_bias=False, name='block1_conv2')(x)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block1_conv2_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block1_conv2_bn')(x)
     x = layers.Activation('relu', name='block1_conv2_act')(x)
 
     # depth_i *= 2
@@ -737,20 +779,23 @@ def CustomXception3D_2(include_top=True,
                              strides=2,
                              padding='same',
                              use_bias=False)(x)
-    # residual = layers.BatchNormalization(axis=channel_axis)(residual)
+    if use_batchnorm:
+        residual = layers.BatchNormalization(axis=channel_axis)(residual)
 
     x = layers.Activation('relu', name='block4_sepconv1_act')(x)
     x = SeparableConv3D(depth_i*base_channel*3//2, 3,
                                padding='same',
                                use_bias=False,
                                name='block4_sepconv1')(x)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block4_sepconv1_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block4_sepconv1_bn')(x)
     x = layers.Activation('relu', name='block4_sepconv2_act')(x)
     x = SeparableConv3D(depth_i*base_channel*3//2, 3,
                                padding='same',
                                use_bias=False,
                                name='block4_sepconv2')(x)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block4_sepconv2_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block4_sepconv2_bn')(x)
 
     x = layers.MaxPooling3D(3, strides=2,
                             padding='same',
@@ -766,42 +811,48 @@ def CustomXception3D_2(include_top=True,
                                    padding='same',
                                    use_bias=False,
                                    name=prefix + '_sepconv1')(x)
-        # x = layers.BatchNormalization(axis=channel_axis,
-        #                               name=prefix + '_sepconv1_bn')(x)
+        if use_batchnorm:
+            x = layers.BatchNormalization(axis=channel_axis,
+                                        name=prefix + '_sepconv1_bn')(x)
         x = layers.Activation('relu', name=prefix + '_sepconv2_act')(x)
         x = SeparableConv3D(depth_i*base_channel*3//2, 3,
                                    padding='same',
                                    use_bias=False,
                                    name=prefix + '_sepconv2')(x)
-        # x = layers.BatchNormalization(axis=channel_axis,
-        #                               name=prefix + '_sepconv2_bn')(x)
+        if use_batchnorm:
+            x = layers.BatchNormalization(axis=channel_axis,
+                                        name=prefix + '_sepconv2_bn')(x)
         x = layers.Activation('relu', name=prefix + '_sepconv3_act')(x)
         x = SeparableConv3D(depth_i*base_channel*3//2, 3,
                                    padding='same',
                                    use_bias=False,
                                    name=prefix + '_sepconv3')(x)
-        # x = layers.BatchNormalization(axis=channel_axis,
-        #                               name=prefix + '_sepconv3_bn')(x)
+        if use_batchnorm:
+            x = layers.BatchNormalization(axis=channel_axis,
+                                        name=prefix + '_sepconv3_bn')(x)
 
         x = layers.add([x, residual])
 
     depth_i *= 2
     residual = layers.Conv3D(depth_i*base_channel, 1, strides=2,
                              padding='same', use_bias=False)(x)
-    # residual = layers.BatchNormalization(axis=channel_axis)(residual)
+    if use_batchnorm:
+        residual = layers.BatchNormalization(axis=channel_axis)(residual)
 
     x = layers.Activation('relu', name='block13_sepconv1_act')(x)
     x = SeparableConv3D(depth_i*base_channel*3//4, 3,
                                padding='same',
                                use_bias=False,
                                name='block13_sepconv1')(x)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block13_sepconv1_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block13_sepconv1_bn')(x)
     x = layers.Activation('relu', name='block13_sepconv2_act')(x)
     x = SeparableConv3D(depth_i*base_channel, 3,
                                padding='same',
                                use_bias=False,
                                name='block13_sepconv2')(x)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block13_sepconv2_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block13_sepconv2_bn')(x)
 
     x = layers.MaxPooling3D(3,
                             strides=2,
@@ -814,14 +865,16 @@ def CustomXception3D_2(include_top=True,
                                padding='same',
                                use_bias=False,
                                name='block14_sepconv1')(x)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block14_sepconv1_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block14_sepconv1_bn')(x)
     x = layers.Activation('relu', name='block14_sepconv1_act')(x)
 
     x = SeparableConv3D(depth_i*base_channel, 3,
                                padding='same',
                                use_bias=False,
                                name='block14_sepconv2')(x)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block14_sepconv2_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block14_sepconv2_bn')(x)
     x = layers.Activation('relu', name='block14_sepconv2_act')(x)
 
     if include_top:
@@ -852,6 +905,7 @@ def CustomXception3D_3(include_top=True,
              pooling=None,
              base_channel=32,
              classes=1000,
+             use_batchnorm=True,
              **kwargs):
     """Instantiates the Xception architecture.
 
@@ -951,19 +1005,22 @@ def CustomXception3D_3(include_top=True,
                              strides=2,
                              padding='same',
                              use_bias=False)(x)
-    # residual = layers.BatchNormalization(axis=channel_axis)(residual)
+    if use_batchnorm:
+        residual = layers.BatchNormalization(axis=channel_axis)(residual)
 
     x = SeparableConv3D(depth_i*base_channel, 3,
                                padding='same',
                                use_bias=False,
                                name='block2_sepconv1')(x)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block2_sepconv1_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block2_sepconv1_bn')(x)
     x = layers.Activation('relu', name='block2_sepconv2_act')(x)
     x = SeparableConv3D(depth_i*base_channel, 3,
                                padding='same',
                                use_bias=False,
                                name='block2_sepconv2')(x)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block2_sepconv2_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block2_sepconv2_bn')(x)
 
     x = layers.MaxPooling3D(3,
                             strides=2,
@@ -974,20 +1031,23 @@ def CustomXception3D_3(include_top=True,
     depth_i *= 2
     residual = layers.Conv3D(depth_i*base_channel, 1, strides=2,
                              padding='same', use_bias=False)(x)
-    # residual = layers.BatchNormalization(axis=channel_axis)(residual)
+    if use_batchnorm:
+        residual = layers.BatchNormalization(axis=channel_axis)(residual)
 
     x = layers.Activation('relu', name='block3_sepconv1_act')(x)
     x = SeparableConv3D(depth_i*base_channel, 3,
                                padding='same',
                                use_bias=False,
                                name='block3_sepconv1')(x)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block3_sepconv1_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block3_sepconv1_bn')(x)
     x = layers.Activation('relu', name='block3_sepconv2_act')(x)
     x = SeparableConv3D(depth_i*base_channel, 3,
                                padding='same',
                                use_bias=False,
                                name='block3_sepconv2')(x)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block3_sepconv2_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block3_sepconv2_bn')(x)
 
     x = layers.MaxPooling3D(3, strides=2,
                             padding='same',
@@ -999,20 +1059,23 @@ def CustomXception3D_3(include_top=True,
                              strides=2,
                              padding='same',
                              use_bias=False)(x)
-    # residual = layers.BatchNormalization(axis=channel_axis)(residual)
+    if use_batchnorm:
+        residual = layers.BatchNormalization(axis=channel_axis)(residual)
 
     x = layers.Activation('relu', name='block4_sepconv1_act')(x)
     x = SeparableConv3D(depth_i*base_channel*3//2, 3,
                                padding='same',
                                use_bias=False,
                                name='block4_sepconv1')(x)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block4_sepconv1_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block4_sepconv1_bn')(x)
     x = layers.Activation('relu', name='block4_sepconv2_act')(x)
     x = SeparableConv3D(depth_i*base_channel*3//2, 3,
                                padding='same',
                                use_bias=False,
                                name='block4_sepconv2')(x)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block4_sepconv2_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block4_sepconv2_bn')(x)
 
     x = layers.MaxPooling3D(3, strides=2,
                             padding='same',
@@ -1028,42 +1091,48 @@ def CustomXception3D_3(include_top=True,
                                    padding='same',
                                    use_bias=False,
                                    name=prefix + '_sepconv1')(x)
-        # x = layers.BatchNormalization(axis=channel_axis,
-        #                               name=prefix + '_sepconv1_bn')(x)
+        if use_batchnorm:
+            x = layers.BatchNormalization(axis=channel_axis,
+                                          name=prefix + '_sepconv1_bn')(x)
         x = layers.Activation('relu', name=prefix + '_sepconv2_act')(x)
         x = SeparableConv3D(depth_i*base_channel*3//2, 3,
                                    padding='same',
                                    use_bias=False,
                                    name=prefix + '_sepconv2')(x)
-        # x = layers.BatchNormalization(axis=channel_axis,
-        #                               name=prefix + '_sepconv2_bn')(x)
+        if use_batchnorm:
+            x = layers.BatchNormalization(axis=channel_axis,
+                                          name=prefix + '_sepconv2_bn')(x)
         x = layers.Activation('relu', name=prefix + '_sepconv3_act')(x)
         x = SeparableConv3D(depth_i*base_channel*3//2, 3,
                                    padding='same',
                                    use_bias=False,
                                    name=prefix + '_sepconv3')(x)
-        # x = layers.BatchNormalization(axis=channel_axis,
-        #                               name=prefix + '_sepconv3_bn')(x)
+        if use_batchnorm:
+            x = layers.BatchNormalization(axis=channel_axis,
+                                      name=prefix + '_sepconv3_bn')(x)
 
         x = layers.add([x, residual])
 
     depth_i *= 2
     residual = layers.Conv3D(depth_i*base_channel, 1, strides=2,
                              padding='same', use_bias=False)(x)
-    # residual = layers.BatchNormalization(axis=channel_axis)(residual)
+    if use_batchnorm:
+        residual = layers.BatchNormalization(axis=channel_axis)(residual)
 
     x = layers.Activation('relu', name='block13_sepconv1_act')(x)
     x = SeparableConv3D(depth_i*base_channel*3//4, 3,
                                padding='same',
                                use_bias=False,
                                name='block13_sepconv1')(x)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block13_sepconv1_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block13_sepconv1_bn')(x)
     x = layers.Activation('relu', name='block13_sepconv2_act')(x)
     x = SeparableConv3D(depth_i*base_channel, 3,
                                padding='same',
                                use_bias=False,
                                name='block13_sepconv2')(x)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block13_sepconv2_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block13_sepconv2_bn')(x)
 
     x = layers.MaxPooling3D(3,
                             strides=2,
@@ -1076,14 +1145,16 @@ def CustomXception3D_3(include_top=True,
                                padding='same',
                                use_bias=False,
                                name='block14_sepconv1')(x)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block14_sepconv1_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block14_sepconv1_bn')(x)
     x = layers.Activation('relu', name='block14_sepconv1_act')(x)
 
     x = SeparableConv3D(depth_i*base_channel, 3,
                                padding='same',
                                use_bias=False,
                                name='block14_sepconv2')(x)
-    # x = layers.BatchNormalization(axis=channel_axis, name='block14_sepconv2_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=channel_axis, name='block14_sepconv2_bn')(x)
     x = layers.Activation('relu', name='block14_sepconv2_act')(x)
 
     if include_top:

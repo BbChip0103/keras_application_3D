@@ -64,7 +64,7 @@ WEIGHTS_HASHES = {
 
 
 def block1(x, filters, kernel_size=3, stride=1,
-           conv_shortcut=True, name=None):
+           conv_shortcut=True, use_batchnorm=True, name=None):
     """A residual block.
 
     # Arguments
@@ -84,32 +84,36 @@ def block1(x, filters, kernel_size=3, stride=1,
     if conv_shortcut is True:
         shortcut = layers.Conv3D(4 * filters, 1, strides=stride,
                                  name=name + '_0_conv')(x)
-        # shortcut = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5,
-        #                                      name=name + '_0_bn')(shortcut)
+        if use_batchnorm:
+            shortcut = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5,
+                                                name=name + '_0_bn')(shortcut)
     else:
         shortcut = x
 
     x = layers.Conv3D(filters, 1, strides=stride, padding='same', name=name + '_1_conv')(x)
-    # x = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5,
-    #                               name=name + '_1_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5,
+                                      name=name + '_1_bn')(x)
     x = layers.Activation('relu', name=name + '_1_relu')(x)
 
     x = layers.Conv3D(filters, kernel_size, padding='same',
                       name=name + '_2_conv')(x)
-    # x = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5,
-    #                               name=name + '_2_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5,
+                                    name=name + '_2_bn')(x)
     x = layers.Activation('relu', name=name + '_2_relu')(x)
 
     x = layers.Conv3D(4 * filters, 1, padding='same', name=name + '_3_conv')(x)
-    # x = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5,
-    #                               name=name + '_3_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5,
+                                      name=name + '_3_bn')(x)
 
     x = layers.Add(name=name + '_add')([shortcut, x])
     x = layers.Activation('relu', name=name + '_out')(x)
     return x
 
 
-def stack1(x, filters, blocks, stride1=2, name=None):
+def stack1(x, filters, blocks, stride1=2, use_batchnorm=True, name=None):
     """A set of stacked residual blocks.
 
     # Arguments
@@ -122,14 +126,15 @@ def stack1(x, filters, blocks, stride1=2, name=None):
     # Returns
         Output tensor for the stacked blocks.
     """
-    x = block1(x, filters, stride=stride1, name=name + '_block1')
+    x = block1(x, filters, stride=stride1, use_batchnorm=use_batchnorm, name=name + '_block1')
     for i in range(2, blocks + 1):
-        x = block1(x, filters, conv_shortcut=False, name=name + '_block' + str(i))
+        x = block1(x, filters, conv_shortcut=False, 
+                    use_batchnorm=use_batchnorm, name=name + '_block' + str(i))
     return x
 
 
 def block2(x, filters, kernel_size=3, stride=1,
-           conv_shortcut=False, name=None):
+           conv_shortcut=False, use_batchnorm=True, name=None):
     """A residual block.
 
     # Arguments
@@ -146,10 +151,12 @@ def block2(x, filters, kernel_size=3, stride=1,
     """
     bn_axis = -1 if backend.image_data_format() == 'channels_last' else 1
 
-    # preact = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5,
-    #                                    name=name + '_preact_bn')(x)
-    # preact = layers.Activation('relu', name=name + '_preact_relu')(preact)
-    preact = layers.Activation('relu', name=name + '_preact_relu')(x)
+    if use_batchnorm:
+        preact = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5,
+                                        name=name + '_preact_bn')(x)
+        preact = layers.Activation('relu', name=name + '_preact_relu')(preact)
+    else:
+        preact = layers.Activation('relu', name=name + '_preact_relu')(x)
 
     if conv_shortcut is True:
         shortcut = layers.Conv3D(4 * filters, 1, strides=stride, padding='same',
@@ -159,14 +166,16 @@ def block2(x, filters, kernel_size=3, stride=1,
 
     x = layers.Conv3D(filters, 1, strides=1, use_bias=False, padding='same',
                       name=name + '_1_conv')(preact)
-    # x = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5,
-    #                               name=name + '_1_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5,
+                                      name=name + '_1_bn')(x)
     x = layers.Activation('relu', name=name + '_1_relu')(x)
 
     x = layers.Conv3D(filters, kernel_size, strides=stride, padding='same', 
                       use_bias=False, name=name + '_2_conv')(x)
-    # x = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5,
-    #                               name=name + '_2_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5,
+                                    name=name + '_2_bn')(x)
     x = layers.Activation('relu', name=name + '_2_relu')(x)
 
     x = layers.Conv3D(4 * filters, 1, padding='same', name=name + '_3_conv')(x)
@@ -174,7 +183,7 @@ def block2(x, filters, kernel_size=3, stride=1,
     return x
 
 
-def stack2(x, filters, blocks, stride1=2, name=None):
+def stack2(x, filters, blocks, stride1=2, use_batchnorm=True, name=None):
     """A set of stacked residual blocks.
 
     # Arguments
@@ -187,15 +196,17 @@ def stack2(x, filters, blocks, stride1=2, name=None):
     # Returns
         Output tensor for the stacked blocks.
     """
-    x = block2(x, filters, conv_shortcut=True, name=name + '_block1')
+    x = block2(x, filters, conv_shortcut=True, use_batchnorm=use_batchnorm, 
+                name=name + '_block1')
     for i in range(2, blocks):
-        x = block2(x, filters, name=name + '_block' + str(i))
-    x = block2(x, filters, stride=stride1, name=name + '_block' + str(blocks))
+        x = block2(x, filters, use_batchnorm=use_batchnorm, name=name + '_block' + str(i))
+    x = block2(x, filters, stride=stride1, use_batchnorm=use_batchnorm, 
+                name=name + '_block' + str(blocks))
     return x
 
 
 def block3(x, filters, kernel_size=3, stride=1, group_base_channel=64, groups=32,
-           conv_shortcut=True, name=None):
+           conv_shortcut=True, use_batchnorm=True, name=None):
     """A residual block.
 
     # Arguments
@@ -216,14 +227,16 @@ def block3(x, filters, kernel_size=3, stride=1, group_base_channel=64, groups=32
     if conv_shortcut is True:
         shortcut = layers.Conv3D((group_base_channel // groups) * filters, 1, strides=stride,
                                  padding='same', use_bias=False, name=name + '_0_conv')(x)
-        # shortcut = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5,
-        #                                      name=name + '_0_bn')(shortcut)
+        if use_batchnorm:
+            shortcut = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5,
+                                                name=name + '_0_bn')(shortcut)
     else:
         shortcut = x
 
     x = layers.Conv3D(filters, 1, use_bias=False, padding='same', name=name + '_1_conv')(x)
-    # x = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5,
-    #                               name=name + '_1_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5,
+                                    name=name + '_1_bn')(x)
     x = layers.Activation('relu', name=name + '_1_relu')(x)
 
     c = filters // groups
@@ -238,21 +251,24 @@ def block3(x, filters, kernel_size=3, stride=1, group_base_channel=64, groups=32
                       kernel_initializer={'class_name': 'Constant',
                                           'config': {'value': kernel}},
                       name=name + '_2_gconv')(x)
-    # x = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5,
-    #                               name=name + '_2_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5,
+                                      name=name + '_2_bn')(x)
     x = layers.Activation('relu', name=name + '_2_relu')(x)
 
     x = layers.Conv3D((group_base_channel // groups) * filters, 1, padding='same',
                       use_bias=False, name=name + '_3_conv')(x)
-    # x = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5,
-    #                               name=name + '_3_bn')(x)
+    if use_batchnorm:
+        x = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5,
+                                    name=name + '_3_bn')(x)
 
     x = layers.Add(name=name + '_add')([shortcut, x])
     x = layers.Activation('relu', name=name + '_out')(x)
     return x
 
 
-def stack3(x, filters, blocks, stride1=2, group_base_channel=64, groups=32, name=None):
+def stack3(x, filters, blocks, stride1=2, group_base_channel=64, 
+            groups=32, use_batchnorm=True, name=None):
     """A set of stacked residual blocks.
 
     # Arguments
@@ -267,10 +283,12 @@ def stack3(x, filters, blocks, stride1=2, group_base_channel=64, groups=32, name
         Output tensor for the stacked blocks.
     """
     x = block3(x, filters, stride=stride1, groups=groups, 
-                group_base_channel=group_base_channel, name=name + '_block1')
+                group_base_channel=group_base_channel, 
+                use_batchnorm=use_batchnorm, name=name + '_block1')
     for i in range(2, blocks + 1):
         x = block3(x, filters, group_base_channel=group_base_channel, groups=groups, 
-                    conv_shortcut=False, name=name + '_block' + str(i))
+                    conv_shortcut=False, use_batchnorm=use_batchnorm, 
+                    name=name + '_block' + str(i))
     return x
 
 
@@ -434,6 +452,7 @@ def CustomResNetHead(stack_fn,
            pooling=None,
            classes=1000,
            first_num_of_conv=64,
+           use_batchnorm=True,
            **kwargs):
     """Instantiates the ResNet, ResNetV2, and ResNeXt architecture.
 
@@ -530,8 +549,9 @@ def CustomResNetHead(stack_fn,
     x = stack_fn(img_input)
 
     if preact is True:
-        # x = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5,
-        #                               name='post_bn')(x)
+        if use_batchnorm:
+            x = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5,
+                                        name='post_bn')(x)
         x = layers.Activation('relu', name='post_relu')(x)
 
     if include_top:
@@ -581,20 +601,22 @@ def CustomResNet3D(include_top=True,
                     classes=1000,
                     base_channel=4,
                     num_of_block=[3,4,6,3],
+                    use_batchnorm=True,
                     **kwargs):
     def stack_fn(x):
         depth_i = 0
         x = stack1(x, base_channel*(2**(depth_i)), num_of_block[depth_i], stride1=1, 
-                    name='conv{}'.format(depth_i+1))
+                    name='conv{}'.format(depth_i+1), use_batchnorm=use_batchnorm)
         for depth_i in range(1, len(num_of_block)):
             x = stack1(x, base_channel*(2**(depth_i)), num_of_block[depth_i], 
-                        name='conv{}'.format(depth_i+1))
+                        name='conv{}'.format(depth_i+1), use_batchnorm=use_batchnorm)
         return x
     return CustomResNetHead(stack_fn, False, True, 'resnet_3D_{}'.format(base_channel),
                             include_top, weights,
                             input_tensor, input_shape,
                             pooling, classes,
                             first_num_of_conv=base_channel, 
+                            use_batchnorm=use_batchnorm
                             **kwargs)
 
 
@@ -691,20 +713,22 @@ def CustomResNet3DV2(include_top=True,
                     classes=1000,
                     base_channel=4,
                     num_of_block=[3,4,6,3],
+                    use_batchnorm=True,
                     **kwargs):
     def stack_fn(x):
         for depth_i in range(len(num_of_block)-1):
             x = stack2(x, base_channel*(2**(depth_i)), num_of_block[depth_i], 
-                        name='conv{}'.format(depth_i+1))
+                        name='conv{}'.format(depth_i+1), use_batchnorm=use_batchnorm)
         depth_i = len(num_of_block)-1
         x = stack2(x, base_channel*(2**(depth_i)), num_of_block[depth_i], stride1=1, 
-                    name='conv{}'.format(depth_i+1))
+                    name='conv{}'.format(depth_i+1), use_batchnorm=use_batchnorm)
         return x
     return CustomResNetHead(stack_fn, False, True, 'resnet_3D_V2_custom_{}'.format(base_channel),
                   include_top, weights,
                   input_tensor, input_shape,
                   pooling, classes,
                   first_num_of_conv=base_channel, 
+                  use_batchnorm=use_batchnorm,
                   **kwargs)
 
 
@@ -803,22 +827,24 @@ def CustomResNext3D(include_top=True,
                     num_of_block=[3,4,6,3],
                     group_base_channel=4,
                     groups=2, 
+                    use_batchnorm=True,
                     **kwargs):
     def stack_fn(x):
         depth_i = 0
         x = stack3(x, base_channel*(2**(depth_i+1)), num_of_block[depth_i], 
                     stride1=1, group_base_channel=group_base_channel, groups=groups, 
-                    name='conv{}'.format(depth_i+2))
+                    name='conv{}'.format(depth_i+2), use_batchnorm=use_batchnorm)
         for depth_i in range(1, len(num_of_block)):
             x = stack3(x, base_channel*(2**(depth_i+1)), num_of_block[depth_i], 
                     group_base_channel=group_base_channel, groups=groups, 
-                    name='conv{}'.format(depth_i+2))
+                    name='conv{}'.format(depth_i+2), use_batchnorm=use_batchnorm)
         return x
     return CustomResNetHead(stack_fn, False, False, 'resnext_3D_custom_{}'.format(base_channel),
                             include_top, weights,
                             input_tensor, input_shape,
                             pooling, classes,
                             first_num_of_conv=base_channel, 
+                            use_batchnorm=use_batchnorm,
                             **kwargs)
 
 

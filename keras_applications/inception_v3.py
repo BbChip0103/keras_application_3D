@@ -500,7 +500,7 @@ def CustomInceptionV3(include_top=True,
     if backend.image_data_format() == 'channels_first':
         channel_axis = 1
     else:
-        channel_axis = 4
+        channel_axis = -1
 
     # x = conv3d_func(img_input, base_channel, 3, 3, 3, strides=2, padding='valid', is_batchnorm=is_batchnorm)
     # x = conv3d_func(x, base_channel, 3, 3, 3, padding='valid', is_batchnorm=is_batchnorm)
