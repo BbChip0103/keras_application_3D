@@ -84,9 +84,9 @@ def _preprocess_conv3d_input(x, data_format):
         A tensor.
     """
     # tensorflow doesn't support float64 for conv layer before 1.8.0
-    if (dtype(x) == 'float64' and
-            StrictVersion(tf.__version__.split('-')[0]) < StrictVersion('1.8.0')):
-        x = tf.cast(x, 'float32')
+    # if (dtype(x) == 'float64' and
+    #         StrictVersion(tf.__version__.split('-')[0]) < StrictVersion('1.8.0')):
+    #     x = tf.cast(x, 'float32')
     tf_data_format = 'NDHWC'
     if data_format == 'channels_first':
         if not _has_nchw_support():
