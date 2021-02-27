@@ -14,9 +14,11 @@
   - [ ] Mobilenet V1, V2, V3
   - [ ] SE-ResNet
   - [ ] NFNet
-- Convolution function for 3D (Please see keras_applications/custom_layers.py)
+- Convolution function for 3D (keras_applications/custom_layers.py)
   - [x] DepthwiseConv3D
   - [x] SeparableConv3D
+- Documentation
+  - [ ] Documentation
 - Exmaple
   - [ ] Classification
   - [ ] Regression
@@ -27,6 +29,7 @@
   - [ ] Activation Maximization
 - Pretrained weight
   - [ ] ??? (Please recommand 3D dataset)
+
 
 ### If you want to use 3D CNN, you may have to reduce number of parameter.
 - So I prepare some custom model to handle this.  
