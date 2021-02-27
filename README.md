@@ -12,10 +12,21 @@
   - [ ] VGG
   - [ ] EfficientNet
   - [ ] Mobilenet V1, V2, V3
-  - [ ] Nasnet
+  - [ ] SE-ResNet
+  - [ ] NFNet
 - Convolution function for 3D (Please see keras_applications/custom_layers.py)
   - [x] DepthwiseConv3D
   - [x] SeparableConv3D
+- Exmaple
+  - [ ] Classification
+  - [ ] Regression
+  - [ ] Visualize trained model
+- Visualization
+  - [ ] Saliency map (Simple gradient)
+  - [ ] Class Activation Map (GradCAM)
+  - [ ] Activation Maximization
+- Pretrained weight
+  - [ ] ??? (Please recommand 3D dataset)
 
 ### If you want to use 3D CNN, you may have to reduce number of parameter.
 - So I prepare some custom model to handle this.  
