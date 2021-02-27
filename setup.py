@@ -23,7 +23,7 @@ setup(
     install_requires=[
         'numpy>=1.9.1',
         'h5py',
-        'tensorflow==2.3.1',
+        'tensorflow>=2.0.0',
     ],
     extras_require={
         'tests': [
