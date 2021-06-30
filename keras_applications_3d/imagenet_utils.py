@@ -10,6 +10,9 @@ import numpy as np
 
 from . import get_submodules_from_kwargs
 
+from tensorflow.python.keras import activations
+
+
 CLASS_INDEX = None
 CLASS_INDEX_PATH = ('https://storage.googleapis.com/download.tensorflow.org/'
                     'data/imagenet_class_index.json')
@@ -232,7 +235,7 @@ def decode_predictions(preds, top=5, **kwargs):
     return results
 
 
-def _obtain_input_shape(input_shape,
+def obtain_input_shape(input_shape,
                         default_size,
                         min_size,
                         data_format,
@@ -332,3 +335,52 @@ def _obtain_input_shape(input_shape,
                              'you should specify a static `input_shape`. '
                              'Got `input_shape=' + str(input_shape) + '`')
     return input_shape
+
+
+def correct_pad(inputs, kernel_size):
+  """Returns a tuple for zero-padding for 2D convolution with downsampling.
+  Args:
+    inputs: Input tensor.
+    kernel_size: An integer or tuple/list of 2 integers.
+  Returns:
+    A tuple.
+  """
+
+    # will be needed???    
+    # backend, _, _, keras_utils = get_submodules_from_kwargs(kwargs)
+
+
+    img_dim = 2 if backend.image_data_format() == 'channels_first' else 1
+    input_size = backend.int_shape(inputs)[img_dim:(img_dim + 2)]
+    if isinstance(kernel_size, int):
+        kernel_size = (kernel_size, kernel_size)
+    if input_size[0] is None:
+        adjust = (1, 1)
+    else:
+        adjust = (1 - input_size[0] % 2, 1 - input_size[1] % 2)
+    correct = (kernel_size[0] // 2, kernel_size[1] // 2)
+    return ((correct[0] - adjust[0], correct[0]),
+            (correct[1] - adjust[1], correct[1]))
+
+
+
+def validate_activation(classifier_activation, weights):
+    """validates that the classifer_activation is compatible with the weights.
+    Args:
+    classifier_activation: str or callable activation function
+    weights: The pretrained weights to load.
+    Raises:
+    ValueError: if an activation other than `None` or `softmax` are used with
+        pretrained weights.
+    """
+    if weights is None:
+        return
+
+    classifier_activation = activations.get(classifier_activation)
+    if classifier_activation not in {
+        activations.get('softmax'),
+        activations.get(None)
+    }:
+    raise ValueError('Only `None` and `softmax` activations are allowed '
+                        'for the `classifier_activation` argument when using '
+                        'pretrained weights, with `include_top=True`')
