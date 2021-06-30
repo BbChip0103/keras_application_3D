@@ -29,11 +29,11 @@ from tensorflow.python.lib.io import file_io
 from tensorflow.python.util.tf_export import keras_export
 
 
-WEIGHTS_PATH = ('https://storage.googleapis.com/tensorflow/keras-applications/'
-                'vgg16/vgg16_weights_tf_dim_ordering_tf_kernels.h5')
-WEIGHTS_PATH_NO_TOP = ('https://storage.googleapis.com/tensorflow/'
-                       'keras-applications/vgg16/'
-                       'vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5')
+# WEIGHTS_PATH = ('https://storage.googleapis.com/tensorflow/keras-applications/'
+#                 'vgg16/vgg16_weights_tf_dim_ordering_tf_kernels.h5')
+# WEIGHTS_PATH_NO_TOP = ('https://storage.googleapis.com/tensorflow/'
+#                        'keras-applications/vgg16/'
+#                        'vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5')
 
 layers = VersionAwareLayers()
 
