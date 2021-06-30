@@ -135,50 +135,65 @@ def VGG19(
 
   # Block 1
   x = layers.Conv3D(
-      base_channel*1, 3, activation='relu', padding='same', name='block1_conv1')(
-          img_input)
+      base_channel*1, 3, 
+      activation='relu', padding='same', name='block1_conv1')(img_input)
   x = layers.Conv3D(
-      base_channel*1, 3, activation='relu', padding='same', name='block1_conv2')(x)
+      base_channel*1, 3, 
+      activation='relu', padding='same', name='block1_conv2')(x)
   x = layers.MaxPooling3D(2, strides=2, name='block1_pool')(x)
 
   # Block 2
   x = layers.Conv3D(
-      base_channel*2, 3, activation='relu', padding='same', name='block2_conv1')(x)
+      base_channel*2, 3, 
+      activation='relu', padding='same', name='block2_conv1')(x)
   x = layers.Conv3D(
-      base_channel*2, 3, activation='relu', padding='same', name='block2_conv2')(x)
+      base_channel*2, 3, 
+      activation='relu', padding='same', name='block2_conv2')(x)
   x = layers.MaxPooling3D(2, strides=2, name='block2_pool')(x)
 
   # Block 3
   x = layers.Conv3D(
-      base_channel*4, 3, activation='relu', padding='same', name='block3_conv1')(x)
+      base_channel*4, 3, 
+      activation='relu', padding='same', name='block3_conv1')(x)
   x = layers.Conv3D(
-      base_channel*4, 3, activation='relu', padding='same', name='block3_conv2')(x)
+      base_channel*4, 3, 
+      activation='relu', padding='same', name='block3_conv2')(x)
   x = layers.Conv3D(
-      base_channel*4, 3, activation='relu', padding='same', name='block3_conv3')(x)
+      base_channel*4, 3, 
+      activation='relu', padding='same', name='block3_conv3')(x)
   x = layers.Conv3D(
-      base_channel*4, 3, activation='relu', padding='same', name='block3_conv4')(x)
+      base_channel*4, 3, 
+      activation='relu', padding='same', name='block3_conv4')(x)
   x = layers.MaxPooling3D(2, strides=2, name='block3_pool')(x)
 
   # Block 4
   x = layers.Conv3D(
-      base_channel*8, 3, activation='relu', padding='same', name='block4_conv1')(x)
+      base_channel*8, 3, 
+      activation='relu', padding='same', name='block4_conv1')(x)
   x = layers.Conv3D(
-      base_channel*8, 3, activation='relu', padding='same', name='block4_conv2')(x)
+      base_channel*8, 3, 
+      activation='relu', padding='same', name='block4_conv2')(x)
   x = layers.Conv3D(
-      base_channel*8, 3, activation='relu', padding='same', name='block4_conv3')(x)
+      base_channel*8, 3, 
+      activation='relu', padding='same', name='block4_conv3')(x)
   x = layers.Conv3D(
-      base_channel*8, 3, activation='relu', padding='same', name='block4_conv4')(x)
+      base_channel*8, 3, 
+      activation='relu', padding='same', name='block4_conv4')(x)
   x = layers.MaxPooling3D(2, strides=2, name='block4_pool')(x)
 
   # Block 5
   x = layers.Conv3D(
-      base_channel*8, 3, activation='relu', padding='same', name='block5_conv1')(x)
+      base_channel*8, 3, 
+      activation='relu', padding='same', name='block5_conv1')(x)
   x = layers.Conv3D(
-      base_channel*8, 3, activation='relu', padding='same', name='block5_conv2')(x)
+      base_channel*8, 3, 
+      activation='relu', padding='same', name='block5_conv2')(x)
   x = layers.Conv3D(
-      base_channel*8, 3, activation='relu', padding='same', name='block5_conv3')(x)
+      base_channel*8, 3, 
+      activation='relu', padding='same', name='block5_conv3')(x)
   x = layers.Conv3D(
-      base_channel*8, 3, activation='relu', padding='same', name='block5_conv4')(x)
+      base_channel*8, 3, 
+      activation='relu', padding='same', name='block5_conv4')(x)
   x = layers.MaxPooling3D(2, strides=2, name='block5_pool')(x)
 
   if include_top:
@@ -221,6 +236,8 @@ def VGG19(
 #     model.load_weights(weights_path)
 #   elif weights is not None:
 #     model.load_weights(weights)
+  if weights is not None:
+    model.load_weights(weights)
 
   return model
 
