@@ -1,10 +1,10 @@
 # keras-applications-3D
 
-keras-applications-3D is implementations of popular deep learning models for 3D domain. (Based on the Keras)
+keras-applications-3D is implementations of popular deep learning models for 3D domain. (Based on the Keras) 
 
 ## NOTICE
-We are migrating for TF (>= 2.5)
-If you interested in this project, feel free and suggest anything.
+We are migrating for TF (>= 2.5) 
+If you interested in this project, feel free and suggest anything. 
 
 ### This repository provide below things 
 - Major CNN architecture for 3D
