@@ -1,10 +1,6 @@
 # keras-applications-3D
 
-keras-applications-3D is implementations of popular deep learning models for 3D domain. (Based on the Keras) 
-
-## NOTICE
-We are migrating for TF (>= 2.5) 
-If you interested in this project, feel free and suggest anything. 
+keras-applications-3D is implementations of popular deep learning models for 3D domain. (Based on the Keras)  
 
 ### This repository provide below things 
 - Major CNN architecture for 3D
@@ -37,8 +33,13 @@ If you interested in this project, feel free and suggest anything.
   - [ ] ??? (Please recommand 3D dataset)
 
 
-### If you want to use 3D CNN, you may have to reduce number of parameter.
-- So I prepare some custom model to handle this.  
+### If you want to use 3D CNN, you'd better reduce number of parameter because of curse of dimension.
+- So We prepare some custom model to handle this.  
+- Please check **base_channel** or **growth_rate** option.  
   
-### When you use 3D CNN, BatchNormalization may not work well because of scarce data.
-- So I also prepare some option to exclude batch-norm.
+### When you use 3D CNN, BatchNormalization may not work well in the scarce data.
+- So We also prepare some option to exclude batch-norm.  
+
+## NOTICE
+We are migrating for TF (>= 2.5)  
+If you interested in this project, feel free and suggest anything.  
