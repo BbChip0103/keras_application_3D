@@ -50,7 +50,7 @@ from tensorflow.python.util.tf_export import keras_export
 layers = VersionAwareLayers()
 
 
-def dense_block(x, blocks, name):
+def dense_block(x, blocks, name, growth_rate=32):
   """A dense block.
   Args:
     x: input tensor.
@@ -60,7 +60,7 @@ def dense_block(x, blocks, name):
     Output tensor for the block.
   """
   for i in range(blocks):
-    x = conv_block(x, 32, name=name + '_block' + str(i + 1))
+    x = conv_block(x, growth_rate, name=name + '_block' + str(i + 1))
   return x
 
 
@@ -124,7 +124,8 @@ def DenseNet(
     input_shape=None,
     pooling=None,
     classes=1000,
-    classifier_activation='softmax'):
+    classifier_activation='softmax',
+    growth_rate=None):
   """Instantiates the DenseNet architecture.
   Reference:
   - [Densely Connected Convolutional Networks](
@@ -210,6 +211,8 @@ def DenseNet(
 
   bn_axis = 4 if backend.image_data_format() == 'channels_last' else 1
 
+  growth_rate = 32 if growth_rate == None else growth_rate
+
   x = layers.ZeroPadding3D(padding=3)(img_input)
   x = layers.Conv3D(64, 7, strides=2, use_bias=False, name='conv1/conv')(x)
   x = layers.BatchNormalization(
@@ -219,13 +222,13 @@ def DenseNet(
   x = layers.ZeroPadding3D(padding=1)(x)
   x = layers.MaxPooling3D(3, strides=2, name='pool1')(x)
 
-  x = dense_block(x, blocks[0], name='conv2')
-  x = transition_block(x, 0.5, name='pool2')
-  x = dense_block(x, blocks[1], name='conv3')
-  x = transition_block(x, 0.5, name='pool3')
-  x = dense_block(x, blocks[2], name='conv4')
-  x = transition_block(x, 0.5, name='pool4')
-  x = dense_block(x, blocks[3], name='conv5')
+  x = dense_block(x, blocks[0], name='conv2', growth_rate=growth_rate)
+  x = transition_block(x, 0.5, name='pool2', growth_rate=growth_rate)
+  x = dense_block(x, blocks[1], name='conv3', growth_rate=growth_rate)
+  x = transition_block(x, 0.5, name='pool3', growth_rate=growth_rate)
+  x = dense_block(x, blocks[2], name='conv4', growth_rate=growth_rate)
+  x = transition_block(x, 0.5, name='pool4', growth_rate=growth_rate)
+  x = dense_block(x, blocks[3], name='conv5', growth_rate=growth_rate)
 
   x = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5, name='bn')(x)
   x = layers.Activation('relu', name='relu')(x)
@@ -251,13 +254,13 @@ def DenseNet(
 
   # Create model.
   if blocks == [6, 12, 24, 16]:
-    model = training.Model(inputs, x, name='densenet121')
+    model = training.Model(inputs, x, name='densenet121_3d')
   elif blocks == [6, 12, 32, 32]:
-    model = training.Model(inputs, x, name='densenet169')
+    model = training.Model(inputs, x, name='densenet169_3d')
   elif blocks == [6, 12, 48, 32]:
-    model = training.Model(inputs, x, name='densenet201')
+    model = training.Model(inputs, x, name='densenet201_3d')
   else:
-    model = training.Model(inputs, x, name='densenet')
+    model = training.Model(inputs, x, name='densenet_3d')
 
 #   # Load weights.
 #   if weights == 'imagenet':
