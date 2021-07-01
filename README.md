@@ -1,20 +1,26 @@
 # keras-applications-3D
 
-### Hello, This repository provide below things 
+keras-applications-3D is implementations of popular deep learning models for 3D domain. (Based on the Keras)
+
+## NOTICE
+We are migrating for TF (>= 2.5)
+If you interested in this project, feel free and suggest anything.
+
+### This repository provide below things 
 - Major CNN architecture for 3D
+  - [x] VGG (16, 19)
   - [x] ResNet (50, 101, 152)
   - [x] ResNetV2 (50, 101, 152)
-  - [x] ResNext 
   - [x] DenseNet (121, 169, 201)
-  - [x] InceptionV3
-  - [x] Inception_Resnet_V2
-  - [x] Xception
-  - [ ] VGG (16, 19)
+  - [ ] ResNext 
+  - [ ] InceptionV3
+  - [ ] Inception_Resnet_V2
+  - [ ] Xception
   - [ ] EfficientNet (B0, B1, ..., B7)
   - [ ] Mobilenet (V1, V2)
   - [ ] SE-ResNet
   - [ ] NFNet
-- Convolution function for 3D (keras_applications/custom_layers.py)
+- Convolution function for 3D (keras_applications_3d/custom_layers.py)
   - [x] DepthwiseConv3D
   - [x] SeparableConv3D
 - Documentation
