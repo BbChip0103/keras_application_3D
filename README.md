@@ -32,7 +32,6 @@ keras-applications-3D is implementations of popular deep learning models for 3D 
 - Pretrained weight
   - [ ] ??? (Please recommand 3D dataset)
 
-
 ### If you want to use 3D CNN, you'd better reduce number of parameter because of curse of dimension.
 - So We prepare some custom model to handle this.  
 - Please check **base_channel** or **growth_rate** option.  
