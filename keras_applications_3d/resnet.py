@@ -147,9 +147,11 @@ def ResNet(stack_fn,
 
   bn_axis = 4 if backend.image_data_format() == 'channels_last' else 1
 
+  base_channel = 64 if base_channel == None else base_channel
+
   x = layers.ZeroPadding3D(
       padding=3, name='conv1_pad')(img_input)
-  x = layers.Conv3D(64, 7, strides=2, use_bias=use_bias, name='conv1_conv')(x)
+  x = layers.Conv3D(base_channel, 7, strides=2, use_bias=use_bias, name='conv1_conv')(x)
 
   if not preact:
     x = layers.BatchNormalization(
