@@ -57,7 +57,9 @@ def ResNet50V2(
       input_shape,
       pooling,
       classes,
-      classifier_activation=classifier_activation)
+      classifier_activation=classifier_activation,
+      base_channel=base_channel,
+      )
 
 
 @keras_export('keras.applications.resnet_v2.ResNet101V2',
@@ -92,7 +94,9 @@ def ResNet101V2(
       input_shape,
       pooling,
       classes,
-      classifier_activation=classifier_activation)
+      classifier_activation=classifier_activation,
+      base_channel=base_channel,
+      )
 
 
 @keras_export('keras.applications.resnet_v2.ResNet152V2',
@@ -127,7 +131,9 @@ def ResNet152V2(
       input_shape,
       pooling,
       classes,
-      classifier_activation=classifier_activation)
+      classifier_activation=classifier_activation,
+      base_channel=base_channel,
+      )
 
 
 @keras_export('keras.applications.resnet_v2.preprocess_input')

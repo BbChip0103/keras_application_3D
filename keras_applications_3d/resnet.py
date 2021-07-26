@@ -147,9 +147,11 @@ def ResNet(stack_fn,
 
   bn_axis = 4 if backend.image_data_format() == 'channels_last' else 1
 
+  base_channel = 64 if base_channel == None else base_channel
+
   x = layers.ZeroPadding3D(
       padding=3, name='conv1_pad')(img_input)
-  x = layers.Conv3D(64, 7, strides=2, use_bias=use_bias, name='conv1_conv')(x)
+  x = layers.Conv3D(base_channel, 7, strides=2, use_bias=use_bias, name='conv1_conv')(x)
 
   if not preact:
     x = layers.BatchNormalization(
@@ -340,7 +342,8 @@ def block3(x,
            stride=1,
            groups=32,
            conv_shortcut=True,
-           name=None):
+           name=None,
+           base_channel=None):
   """A residual block.
   Args:
     x: input tensor.
@@ -356,9 +359,11 @@ def block3(x,
   """
   bn_axis = 4 if backend.image_data_format() == 'channels_last' else 1
 
+  base_channel = 64 if base_channel == None else base_channel
+
   if conv_shortcut:
     shortcut = layers.Conv3D(
-        (64 // groups) * filters,
+        (base_channel // groups) * filters,
         1,
         strides=stride,
         use_bias=False,
@@ -392,7 +397,7 @@ def block3(x,
   x = layers.Activation('relu', name=name + '_2_relu')(x)
 
   x = layers.Conv3D(
-      (64 // groups) * filters, 1, use_bias=False, name=name + '_3_conv')(x)
+      (base_channel // groups) * filters, 1, use_bias=False, name=name + '_3_conv')(x)
   x = layers.BatchNormalization(
       axis=bn_axis, epsilon=1.001e-5, name=name + '_3_bn')(x)
 
@@ -401,7 +406,7 @@ def block3(x,
   return x
 
 
-def stack3(x, filters, blocks, stride1=2, groups=32, name=None):
+def stack3(x, filters, blocks, stride1=2, groups=32, name=None, base_channel=None):
   """A set of stacked residual blocks.
   Args:
     x: input tensor.
@@ -420,7 +425,8 @@ def stack3(x, filters, blocks, stride1=2, groups=32, name=None):
         filters,
         groups=groups,
         conv_shortcut=False,
-        name=name + '_block' + str(i))
+        name=name + '_block' + str(i),
+        base_channel=base_channel)
   return x
 
 
@@ -446,9 +452,9 @@ def ResNet50(include_top=True,
     return stack1(x, base_channel*8, 3, name='conv5')
 
   return ResNet(stack_fn, False, True, 'resnet50_3d', include_top, weights,
-                input_tensor, input_shape, pooling, classes, base_channel, 
+                input_tensor, input_shape, pooling, classes, 
+                base_channel=base_channel,
                 **kwargs)
-
 
 @keras_export('keras.applications.resnet.ResNet101',
               'keras.applications.ResNet101')
@@ -471,7 +477,8 @@ def ResNet101(include_top=True,
     return stack1(x, base_channel*8, 3, name='conv5')
 
   return ResNet(stack_fn, False, True, 'resnet101_3d', include_top, weights,
-                input_tensor, input_shape, pooling, classes, base_channel,
+                input_tensor, input_shape, pooling, classes,
+                base_channel=base_channel,
                 **kwargs)
 
 
@@ -496,7 +503,8 @@ def ResNet152(include_top=True,
     return stack1(x, base_channel*8, 3, name='conv5')
 
   return ResNet(stack_fn, False, True, 'resnet152_3d', include_top, weights,
-                input_tensor, input_shape, pooling, classes, base_channel,
+                input_tensor, input_shape, pooling, classes, 
+                base_channel=base_channel,
                 **kwargs)
 
 
