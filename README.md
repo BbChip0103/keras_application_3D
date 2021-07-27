@@ -32,6 +32,21 @@ keras-applications-3D is implementations of popular deep learning models for 3D 
 - Pretrained weight
   - [ ] ??? (Please recommand 3D dataset)
 
+### Model benchmark (Test accuracy)
+|Model|ModelNet10 accuracy|Number of parameters|
+|:---:|:---:|:---:|
+|VGG16 (16)|0.9001|23,780,058|
+|VGG19 (16)|0.9075|24,775,706|
+|ResNet50 (16)|0.8062|2,923,818|
+|ResNet101 (16)|0.7467|5,393,578|
+|ResNet152 (16)|0.7588|7,429,418|
+|ResNet50V2 (16)|0.8194|2,918,090|
+|ResNet101V2 (16)|0.8128|5,385,674|
+|ResNet152V2 (16)|0.8007|7,419,594|
+|DenseNet121 (16)|0.9042|2,884,010|
+|DenseNet169 (16)|0.8855|4,768,298|
+|DenseNet201 (16)|0.8998|6,519,594|
+
 ### If you want to use 3D CNN, you'd better reduce number of parameter because of curse of dimension.
 - So We prepare some custom model to handle this.  
 - Please check **base_channel** or **growth_rate** option.  
