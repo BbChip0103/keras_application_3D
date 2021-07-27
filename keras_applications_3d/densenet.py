@@ -119,13 +119,14 @@ def conv_block(x, growth_rate, name):
 def DenseNet(
     blocks,
     include_top=True,
-    weights='imagenet',
+    weights=None,
     input_tensor=None,
     input_shape=None,
     pooling=None,
     classes=1000,
     classifier_activation='softmax',
-    growth_rate=None):
+    growth_rate=None,
+    base_channel=None):
   """Instantiates the DenseNet architecture.
   Reference:
   - [Densely Connected Convolutional Networks](
@@ -211,10 +212,13 @@ def DenseNet(
 
   bn_axis = 4 if backend.image_data_format() == 'channels_last' else 1
 
+  if growth_rate == None and base_channel != None:
+    growth_rate = base_channel
+
   growth_rate = 32 if growth_rate == None else growth_rate
 
   x = layers.ZeroPadding3D(padding=3)(img_input)
-  x = layers.Conv3D(64, 7, strides=2, use_bias=False, name='conv1/conv')(x)
+  x = layers.Conv3D(growth_rate*2, 7, strides=2, use_bias=False, name='conv1/conv')(x)
   x = layers.BatchNormalization(
       axis=bn_axis, epsilon=1.001e-5, name='conv1/bn')(
           x)
@@ -223,18 +227,18 @@ def DenseNet(
   x = layers.MaxPooling3D(3, strides=2, name='pool1')(x)
 
   x = dense_block(x, blocks[0], name='conv2', growth_rate=growth_rate)
-  x = transition_block(x, 0.5, name='pool2', growth_rate=growth_rate)
+  x = transition_block(x, 0.5, name='pool2')
   x = dense_block(x, blocks[1], name='conv3', growth_rate=growth_rate)
-  x = transition_block(x, 0.5, name='pool3', growth_rate=growth_rate)
+  x = transition_block(x, 0.5, name='pool3')
   x = dense_block(x, blocks[2], name='conv4', growth_rate=growth_rate)
-  x = transition_block(x, 0.5, name='pool4', growth_rate=growth_rate)
+  x = transition_block(x, 0.5, name='pool4')
   x = dense_block(x, blocks[3], name='conv5', growth_rate=growth_rate)
 
   x = layers.BatchNormalization(axis=bn_axis, epsilon=1.001e-5, name='bn')(x)
   x = layers.Activation('relu', name='relu')(x)
 
   if include_top:
-    x = layers.GlobalAveragePooling2D(name='avg_pool')(x)
+    x = layers.GlobalAveragePooling3D(name='avg_pool')(x)
 
     imagenet_utils.validate_activation(classifier_activation, weights)
     x = layers.Dense(classes, activation=classifier_activation,
@@ -315,40 +319,59 @@ def DenseNet(
 @keras_export('keras.applications.densenet.DenseNet121',
               'keras.applications.DenseNet121')
 def DenseNet121(include_top=True,
-                weights='imagenet',
+                weights=None,
                 input_tensor=None,
                 input_shape=None,
                 pooling=None,
-                classes=1000):
+                classes=1000,
+                growth_rate=None,
+                base_channel=None
+                ):
   """Instantiates the Densenet121 architecture."""
+
+  if growth_rate == None and base_channel != None:
+    growth_rate = base_channel
+
   return DenseNet([6, 12, 24, 16], include_top, weights, input_tensor,
-                  input_shape, pooling, classes)
+                  input_shape, pooling, classes, growth_rate=growth_rate)
 
 
 @keras_export('keras.applications.densenet.DenseNet169',
               'keras.applications.DenseNet169')
 def DenseNet169(include_top=True,
-                weights='imagenet',
+                weights=None,
                 input_tensor=None,
                 input_shape=None,
                 pooling=None,
-                classes=1000):
+                classes=1000,
+                growth_rate=None,
+                base_channel=None):
   """Instantiates the Densenet169 architecture."""
+
+  if growth_rate == None and base_channel != None:
+    growth_rate = base_channel
+
   return DenseNet([6, 12, 32, 32], include_top, weights, input_tensor,
-                  input_shape, pooling, classes)
+                  input_shape, pooling, classes, growth_rate=growth_rate)
 
 
 @keras_export('keras.applications.densenet.DenseNet201',
               'keras.applications.DenseNet201')
 def DenseNet201(include_top=True,
-                weights='imagenet',
+                weights=None,
                 input_tensor=None,
                 input_shape=None,
                 pooling=None,
-                classes=1000):
+                classes=1000,
+                growth_rate=None,
+                base_channel=None):
   """Instantiates the Densenet201 architecture."""
+
+  if growth_rate == None and base_channel != None:
+    growth_rate = base_channel
+
   return DenseNet([6, 12, 48, 32], include_top, weights, input_tensor,
-                  input_shape, pooling, classes)
+                  input_shape, pooling, classes, growth_rate=growth_rate)
 
 
 @keras_export('keras.applications.densenet.preprocess_input')
