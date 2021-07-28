@@ -51,7 +51,7 @@ print('Accuracy: {:04f}'.format(accr))
 ---
 
 ## This repository provide below things 
-- Major 2D CNN architecture for 3D ([X]: Complete, []: In progress)
+- Major 2D CNN architecture for 3D ([V]: Complete, []: In progress)
   - [X] VGG (16, 19)
   - [X] ResNet (50, 101, 152)
   - [X] ResNetV2 (50, 101, 152)
