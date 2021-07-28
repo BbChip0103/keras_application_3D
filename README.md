@@ -84,7 +84,7 @@ print('Accuracy: {:04f}'.format(accr))
   
 ---
 
-## Model benchmark (Test accuracy)
+## Model benchmark
 |Model|ModelNet10 accuracy|Number of parameters|
 |:---:|:---:|:---:|
 |VGG16 (16)|0.9001|23,780,058|
@@ -103,12 +103,12 @@ print('Accuracy: {:04f}'.format(accr))
 ## Example
 - [ModelNet10 classificaition using VGG19(16)](https://colab.research.google.com/drive/14H43f1YWGsxixJjQiphQ6cDx7lozAn5G?usp=sharing)
 ---
-
-## If you want to use 3D CNN, you'd better reduce number of parameter because of curse of dimension.
+## FYI
+### If you want to use 3D CNN, you'd better reduce number of parameter because of curse of dimension.
 - So We prepare some custom model to handle this.  
 - Please check **base_channel** or **growth_rate** option.  
   
-## When you use 3D CNN, BatchNormalization may not work well in the scarce data.
+### When you use 3D CNN, BatchNormalization may not work well in the scarce data.
 - So We also prepare some option to exclude batch-norm.  
 ---
 ## NOTICE
