@@ -56,30 +56,30 @@ print('Accuracy: {:04f}'.format(accr))
   - [X] ResNet (50, 101, 152)
   - [X] ResNetV2 (50, 101, 152)
   - [X] DenseNet (121, 169, 201)
-  - [] ResNext 
-  - [] InceptionV3
-  - [] Inception_Resnet_V2
-  - [] Xception
-  - [] EfficientNet (B0, B1, ..., B7)
-  - [] Mobilenet (V1, V2)
-  - [] SE-ResNet
-  - [] NFNet
+  - [ ] ResNext 
+  - [ ] InceptionV3
+  - [ ] Inception_Resnet_V2
+  - [ ] Xception
+  - [ ] EfficientNet (B0, B1, ..., B7)
+  - [ ] Mobilenet (V1, V2)
+  - [ ] SE-ResNet
+  - [ ] NFNet
 - Convolution function for 3D (keras_applications_3d/custom_layers.py)
   - [X] DepthwiseConv3D
   - [X] SeparableConv3D
 - Documentation
-  - [] Documentation
+  - [ ] Documentation
 - Exmaple
   - [X] Classification
-  - [] Regression
-  - [] Visualize trained model
+  - [ ] Regression
+  - [ ] Visualize trained model
 - Visualization
-  - [] Saliency map (Simple gradient)
-  - [] Class Activation Map (GradCAM)
-  - [] Activation Maximization
+  - [ ] Saliency map (Simple gradient)
+  - [ ] Class Activation Map (GradCAM)
+  - [ ] Activation Maximization
 - Pretrained weight
-  - [] ModelNet10
-  - [] ModelNet40
+  - [ ] ModelNet10
+  - [ ] ModelNet40
   - (Please recommand any 3D dataset)
   
 ---
