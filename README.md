@@ -51,35 +51,35 @@ print('Accuracy: {:04f}'.format(accr))
 ---
 
 ## This repository provide below things 
-- Major 2D CNN architecture for 3D (O: Complete, X: In progress)
-  - [O] VGG (16, 19)
-  - [O] ResNet (50, 101, 152)
-  - [O] ResNetV2 (50, 101, 152)
-  - [O] DenseNet (121, 169, 201)
-  - [X] ResNext 
-  - [X] InceptionV3
-  - [X] Inception_Resnet_V2
-  - [X] Xception
-  - [X] EfficientNet (B0, B1, ..., B7)
-  - [X] Mobilenet (V1, V2)
-  - [X] SE-ResNet
-  - [X] NFNet
+- Major 2D CNN architecture for 3D ([X]: Complete, []: In progress)
+  - [X] VGG (16, 19)
+  - [X] ResNet (50, 101, 152)
+  - [X] ResNetV2 (50, 101, 152)
+  - [X] DenseNet (121, 169, 201)
+  - [] ResNext 
+  - [] InceptionV3
+  - [] Inception_Resnet_V2
+  - [] Xception
+  - [] EfficientNet (B0, B1, ..., B7)
+  - [] Mobilenet (V1, V2)
+  - [] SE-ResNet
+  - [] NFNet
 - Convolution function for 3D (keras_applications_3d/custom_layers.py)
-  - [O] DepthwiseConv3D
-  - [O] SeparableConv3D
+  - [X] DepthwiseConv3D
+  - [X] SeparableConv3D
 - Documentation
-  - [X] Documentation
+  - [] Documentation
 - Exmaple
-  - [O] Classification
-  - [X] Regression
-  - [X] Visualize trained model
+  - [X] Classification
+  - [] Regression
+  - [] Visualize trained model
 - Visualization
-  - [X] Saliency map (Simple gradient)
-  - [X] Class Activation Map (GradCAM)
-  - [X] Activation Maximization
+  - [] Saliency map (Simple gradient)
+  - [] Class Activation Map (GradCAM)
+  - [] Activation Maximization
 - Pretrained weight
-  - [X] ModelNet10
-  - [X] ModelNet40
+  - [] ModelNet10
+  - [] ModelNet40
   - (Please recommand any 3D dataset)
   
 ---
