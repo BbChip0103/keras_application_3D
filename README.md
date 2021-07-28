@@ -1,38 +1,92 @@
 # keras-applications-3D
 
-keras-applications-3D is implementations of popular deep learning models for 3D domain. (Based on the Keras)  
+## keras-applications-3D is implementations of popular 2D-image deep learning models for 3D domain. (Based on the Keras)  
 
-### This repository provide below things 
-- Major CNN architecture for 3D
-  - [x] VGG (16, 19)
-  - [x] ResNet (50, 101, 152)
-  - [x] ResNetV2 (50, 101, 152)
-  - [x] DenseNet (121, 169, 201)
-  - [ ] ResNext 
-  - [ ] InceptionV3
-  - [ ] Inception_Resnet_V2
-  - [ ] Xception
-  - [ ] EfficientNet (B0, B1, ..., B7)
-  - [ ] Mobilenet (V1, V2)
-  - [ ] SE-ResNet
-  - [ ] NFNet
+---
+## Install
+```
+pip install Keras-Applications-3D
+```
+---
+## Usage
+``` python
+import sklearn
+
+# ...
+### Prepare your 3D data [Ex. (64,64,64,1) shape]
+X = np.zeros((128, 64, 64, 64, 1))
+y = np.zeros((128, 10))
+y[:,0] = 1
+# ...
+
+### Oriinal channel of model is '64->128->256->...'
+### But it takes a lot of memory, So we reduce first channel 64 to 16
+model = vgg19.VGG19(
+  input_shape=(64,64,64,1), classes=10,
+  base_channel=16
+)
+# model.summary()
+
+### Training
+model.compile(
+    loss='categorical_crossentropy', 
+    optimizer=Adam(learning_rate=1e-4),
+    metrics=['acc']
+)
+
+history = model.fit(
+    x=X, y=y, 
+)
+
+### Inference
+pred = model.predict(X_test).squeeze()
+real = y_test
+
+pred = pred.argmax(axis=1)
+real = real.argmax(axis=1)
+
+accr = (pred == real).sum() / len(real)
+print('Accuracy: {:04f}'.format(accr))
+
+```
+
+---
+
+## This repository provide below things 
+- Major 2D CNN architecture for 3D (O: Complete, X: In progress)
+  - [O] VGG (16, 19)
+  - [O] ResNet (50, 101, 152)
+  - [O] ResNetV2 (50, 101, 152)
+  - [O] DenseNet (121, 169, 201)
+  - [X] ResNext 
+  - [X] InceptionV3
+  - [X] Inception_Resnet_V2
+  - [X] Xception
+  - [X] EfficientNet (B0, B1, ..., B7)
+  - [X] Mobilenet (V1, V2)
+  - [X] SE-ResNet
+  - [X] NFNet
 - Convolution function for 3D (keras_applications_3d/custom_layers.py)
-  - [x] DepthwiseConv3D
-  - [x] SeparableConv3D
+  - [O] DepthwiseConv3D
+  - [O] SeparableConv3D
 - Documentation
-  - [ ] Documentation
+  - [X] Documentation
 - Exmaple
-  - [ ] Classification
-  - [ ] Regression
-  - [ ] Visualize trained model
+  - [O] Classification
+  - [X] Regression
+  - [X] Visualize trained model
 - Visualization
-  - [ ] Saliency map (Simple gradient)
-  - [ ] Class Activation Map (GradCAM)
-  - [ ] Activation Maximization
+  - [X] Saliency map (Simple gradient)
+  - [X] Class Activation Map (GradCAM)
+  - [X] Activation Maximization
 - Pretrained weight
-  - [ ] ??? (Please recommand 3D dataset)
+  - [X] ModelNet10
+  - [X] ModelNet40
+  - (Please recommand any 3D dataset)
+  
+---
 
-### Model benchmark (Test accuracy)
+## Model benchmark (Test accuracy)
 |Model|ModelNet10 accuracy|Number of parameters|
 |:---:|:---:|:---:|
 |VGG16 (16)|0.9001|23,780,058|
@@ -47,13 +101,15 @@ keras-applications-3D is implementations of popular deep learning models for 3D 
 |DenseNet169 (16)|0.8855|4,768,298|
 |DenseNet201 (16)|0.8998|6,519,594|
 
-### If you want to use 3D CNN, you'd better reduce number of parameter because of curse of dimension.
+---
+
+## If you want to use 3D CNN, you'd better reduce number of parameter because of curse of dimension.
 - So We prepare some custom model to handle this.  
 - Please check **base_channel** or **growth_rate** option.  
   
-### When you use 3D CNN, BatchNormalization may not work well in the scarce data.
+## When you use 3D CNN, BatchNormalization may not work well in the scarce data.
 - So We also prepare some option to exclude batch-norm.  
-
+---
 ## NOTICE
 We are migrating for TF (>= 2.5)  
 If you interested in this project, feel free and suggest anything.  
