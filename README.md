@@ -37,8 +37,8 @@ history = model.fit(
 )
 
 ### Inference
-pred = model.predict(X_test).squeeze()
-real = y_test
+pred = model.predict(X).squeeze()
+real = y
 
 pred = pred.argmax(axis=1)
 real = real.argmax(axis=1)
