@@ -1,6 +1,6 @@
 # keras-applications-3D
 
-## keras-applications-3D is 3D-image deep learning models based on popular 2D models. (Based on the Keras)  
+## 'keras-applications-3D' is 3D-image deep learning models based on popular 2D models. (Based on the Keras)  
 
 ---
 ## Install
