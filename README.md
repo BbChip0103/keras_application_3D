@@ -10,10 +10,8 @@ pip install Keras-Applications-3D
 ---
 ## Usage
 ``` python
-import sklearn
-
-# ...
 ### Prepare your 3D data [Ex. (64,64,64,1) shape]
+# ...
 X = np.zeros((128, 64, 64, 64, 1))
 y = np.zeros((128, 10))
 y[:,0] = 1
