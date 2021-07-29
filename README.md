@@ -49,6 +49,10 @@ print('Accuracy: {:04f}'.format(accr))
 ```
 
 ---
+## Example
+- [ModelNet10 classificaition using VGG19(16)](https://colab.research.google.com/drive/14H43f1YWGsxixJjQiphQ6cDx7lozAn5G?usp=sharing)
+
+---
 
 ## This repository provide below things 
 - Major 2D CNN architecture for 3D ([V]: Complete, []: In progress)
@@ -99,9 +103,6 @@ print('Accuracy: {:04f}'.format(accr))
 |DenseNet169 (16)|0.8855|4,768,298|
 |DenseNet201 (16)|0.8998|6,519,594|
 
----
-## Example
-- [ModelNet10 classificaition using VGG19(16)](https://colab.research.google.com/drive/14H43f1YWGsxixJjQiphQ6cDx7lozAn5G?usp=sharing)
 ---
 ## FYI
 ### If you want to use 3D CNN, you'd better reduce number of parameter because of curse of dimension.
