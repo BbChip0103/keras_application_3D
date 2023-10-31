@@ -21,10 +21,8 @@ Reference:
 
 from tensorflow.keras import backend
 from keras_applications_3d import imagenet_utils
-from tensorflow.python.keras.engine import training
-from tensorflow.python.keras.layers import VersionAwareLayers
-from tensorflow.python.keras.utils import data_utils, layer_utils
-from tensorflow.python.lib.io import file_io
+from tensorflow.keras import Model, layers
+from tensorflow.keras.utils import get_source_inputs
 from tensorflow.python.util.tf_export import keras_export
 
 
@@ -33,8 +31,6 @@ from tensorflow.python.util.tf_export import keras_export
 # WEIGHTS_PATH_NO_TOP = ('https://storage.googleapis.com/tensorflow/'
 #                        'keras-applications/vgg19/'
 #                        'vgg19_weights_tf_dim_ordering_tf_kernels_notop.h5')
-
-layers = VersionAwareLayers()
 
 
 @keras_export('keras.applications.vgg19.VGG19', 'keras.applications.VGG19')
@@ -212,11 +208,11 @@ def VGG19(
   # Ensure that the model takes into account
   # any potential predecessors of `input_tensor`.
   if input_tensor is not None:
-    inputs = layer_utils.get_source_inputs(input_tensor)
+    inputs = get_source_inputs(input_tensor)
   else:
     inputs = img_input
   # Create model.
-  model = training.Model(inputs, x, name='vgg19_3d')
+  model = Model(inputs, x, name='vgg19_3d')
 
 #   # Load weights.
 #   if weights == 'imagenet':

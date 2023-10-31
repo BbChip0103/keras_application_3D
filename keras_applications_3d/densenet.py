@@ -20,12 +20,9 @@ Reference:
 """
 
 from tensorflow.keras import backend
-from tensorflow.keras.applications import imagenet_utils
-from tensorflow.python.keras.engine import training
-from tensorflow.python.keras.layers import VersionAwareLayers
-from tensorflow.python.keras.utils import data_utils
-from tensorflow.python.keras.utils import layer_utils
-from tensorflow.python.lib.io import file_io
+from keras_applications_3d import imagenet_utils
+from tensorflow.keras import Model, layers
+from tensorflow.keras.utils import get_source_inputs
 from tensorflow.python.util.tf_export import keras_export
 
 
@@ -47,7 +44,7 @@ from tensorflow.python.util.tf_export import keras_export
 #     BASE_WEIGHTS_PATH +
 #     'densenet201_weights_tf_dim_ordering_tf_kernels_notop.h5')
 
-layers = VersionAwareLayers()
+# layers = VersionAwareLayers()
 
 
 def dense_block(x, blocks, name, growth_rate=32):
@@ -252,19 +249,19 @@ def DenseNet(
   # Ensure that the model takes into account
   # any potential predecessors of `input_tensor`.
   if input_tensor is not None:
-    inputs = layer_utils.get_source_inputs(input_tensor)
+    inputs = get_source_inputs(input_tensor)
   else:
     inputs = img_input
 
   # Create model.
   if blocks == [6, 12, 24, 16]:
-    model = training.Model(inputs, x, name='densenet121_3d')
+    model = Model(inputs, x, name='densenet121_3d')
   elif blocks == [6, 12, 32, 32]:
-    model = training.Model(inputs, x, name='densenet169_3d')
+    model = Model(inputs, x, name='densenet169_3d')
   elif blocks == [6, 12, 48, 32]:
-    model = training.Model(inputs, x, name='densenet201_3d')
+    model = Model(inputs, x, name='densenet201_3d')
   else:
-    model = training.Model(inputs, x, name='densenet_3d')
+    model = Model(inputs, x, name='densenet_3d')
 
 #   # Load weights.
 #   if weights == 'imagenet':

@@ -112,5 +112,4 @@ print('Accuracy: {:04f}'.format(accr))
 - So We also prepare some option to exclude batch-norm.  
 ---
 ## NOTICE
-We are migrating for TF (>= 2.5)  
 If you interested in this project, feel free and suggest anything.  

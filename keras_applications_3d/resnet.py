@@ -21,10 +21,8 @@ Reference:
 
 from tensorflow.keras import backend
 from keras_applications_3d import imagenet_utils
-from tensorflow.python.keras.engine import training
-from tensorflow.python.keras.layers import VersionAwareLayers
-from tensorflow.python.keras.utils import data_utils, layer_utils
-from tensorflow.python.lib.io import file_io
+from tensorflow.keras import Model, layers
+from tensorflow.keras.utils import get_source_inputs
 from tensorflow.python.util.tf_export import keras_export
 
 
@@ -49,7 +47,7 @@ from tensorflow.python.util.tf_export import keras_export
 #         ('34fb605428fcc7aa4d62f44404c11509', '0f678c91647380debd923963594981b3')
 # }
 
-layers = None
+# layers = None
 
 
 def ResNet(stack_fn,
@@ -110,11 +108,11 @@ def ResNet(stack_fn,
   Returns:
     A `keras.Model` instance.
   """
-  global layers
-  if 'layers' in kwargs:
-    layers = kwargs.pop('layers')
-  else:
-    layers = VersionAwareLayers()
+  # global layers
+  # if 'layers' in kwargs:
+  #   layers = kwargs.pop('layers')
+  # else:
+  #   layers = VersionAwareLayers()
   if kwargs:
     raise ValueError('Unknown argument(s): %s' % (kwargs,))
   if not (weights in {'imagenet', None} or file_io.file_exists_v2(weights)):
@@ -181,12 +179,12 @@ def ResNet(stack_fn,
   # Ensure that the model takes into account
   # any potential predecessors of `input_tensor`.
   if input_tensor is not None:
-    inputs = layer_utils.get_source_inputs(input_tensor)
+    inputs = get_source_inputs(input_tensor)
   else:
     inputs = img_input
 
   # Create model.
-  model = training.Model(inputs, x, name=model_name)
+  model = Model(inputs, x, name=model_name)
 
 #   # Load weights.
 #   if (weights == 'imagenet') and (model_name in WEIGHTS_HASHES):
