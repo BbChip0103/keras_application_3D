@@ -19,8 +19,8 @@ Reference:
       https://arxiv.org/abs/1608.06993) (CVPR 2017)
 """
 
-from tensorflow.python.keras import backend
-from tensorflow.python.keras.applications import imagenet_utils
+from tensorflow.keras import backend
+from tensorflow.keras.applications import imagenet_utils
 from tensorflow.python.keras.engine import training
 from tensorflow.python.keras.layers import VersionAwareLayers
 from tensorflow.python.keras.utils import data_utils
@@ -385,10 +385,7 @@ def decode_predictions(preds, top=5):
   return imagenet_utils.decode_predictions(preds, top=top)
 
 
-preprocess_input.__doc__ = imagenet_utils.PREPROCESS_INPUT_DOC.format(
-    mode='',
-    ret=imagenet_utils.PREPROCESS_INPUT_RET_DOC_TORCH,
-    error=imagenet_utils.PREPROCESS_INPUT_ERROR_DOC)
+preprocess_input.__doc__ = imagenet_utils.preprocess_input.__doc__
 decode_predictions.__doc__ = imagenet_utils.decode_predictions.__doc__
 
 DOC = """
